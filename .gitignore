@@ -50,3 +50,6 @@ Thumbs.db
 # Task / Scratch outputs
 scratch/
 .pytest_cache/
+data/processed/*.jsonl
+data/processed/*.csv
+.env.example

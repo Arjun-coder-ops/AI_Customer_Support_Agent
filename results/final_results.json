@@ -1,13 +1,13 @@
 {
   "evaluation_status": "COMPLETED",
   "data_leakage": {
-    "has_leakage": false,
-    "leakage_status": "PASSED (ZERO LEAKAGE)",
+    "has_leakage": true,
+    "leakage_status": "FAILED (DATA LEAKAGE DETECTED)",
     "train_val_id_overlap": 0,
     "train_test_id_overlap": 0,
     "train_golden_id_overlap": 0,
     "val_test_id_overlap": 0,
-    "train_test_exact_message_overlap": 0
+    "train_test_exact_message_overlap": 10
   },
   "intent_classification": {
     "majority": {
@@ -17,91 +17,79 @@
       "macro_recall": 0.0,
       "macro_f1": 0.0,
       "weighted_f1": 0.0,
-      "predicted_label": "shipping_delay"
+      "predicted_label": "general_inquiry_feedback"
     },
     "tfidf_logreg": {
       "model": "TFIDF_LogisticRegression",
-      "accuracy": 0.0,
-      "macro_precision": 0.0,
-      "macro_recall": 0.0,
-      "macro_f1": 0.0,
-      "weighted_f1": 0.0,
+      "accuracy": 1.0,
+      "macro_precision": 1.0,
+      "macro_recall": 1.0,
+      "macro_f1": 1.0,
+      "weighted_f1": 1.0,
       "per_class_metrics": {
-        "missing_item": {
-          "precision": 0.0,
-          "recall": 0.0,
-          "f1-score": 0.0,
-          "support": 0.0
-        },
         "refund_return_request": {
-          "precision": 0.0,
-          "recall": 0.0,
-          "f1-score": 0.0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1-score": 1.0,
           "support": 1.0
         },
-        "accuracy": 0.0,
+        "accuracy": 1.0,
         "macro avg": {
-          "precision": 0.0,
-          "recall": 0.0,
-          "f1-score": 0.0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1-score": 1.0,
           "support": 1.0
         },
         "weighted avg": {
-          "precision": 0.0,
-          "recall": 0.0,
-          "f1-score": 0.0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1-score": 1.0,
           "support": 1.0
         }
       }
     },
     "final_classifier": {
       "model": "FinalIntentClassifier",
-      "accuracy": 0.0,
-      "macro_precision": 0.0,
-      "macro_recall": 0.0,
-      "macro_f1": 0.0,
-      "weighted_f1": 0.0,
+      "accuracy": 1.0,
+      "macro_precision": 1.0,
+      "macro_recall": 1.0,
+      "macro_f1": 1.0,
+      "weighted_f1": 1.0,
       "per_class_metrics": {
-        "missing_item": {
-          "precision": 0.0,
-          "recall": 0.0,
-          "f1-score": 0.0,
-          "support": 0.0
-        },
         "refund_return_request": {
-          "precision": 0.0,
-          "recall": 0.0,
-          "f1-score": 0.0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1-score": 1.0,
           "support": 1.0
         },
-        "accuracy": 0.0,
+        "accuracy": 1.0,
         "macro avg": {
-          "precision": 0.0,
-          "recall": 0.0,
-          "f1-score": 0.0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1-score": 1.0,
           "support": 1.0
         },
         "weighted avg": {
-          "precision": 0.0,
-          "recall": 0.0,
-          "f1-score": 0.0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1-score": 1.0,
           "support": 1.0
         }
       }
     }
   },
   "historical_retrieval": {
-    "index_corpus_case_count": 3,
-    "held_out_query_count": 1,
+    "index_corpus_case_count": 82493,
+    "held_out_query_count": 8250,
     "evaluation_methodology": "Held-out queries evaluated against training index corpus (zero self-query leakage)",
     "recall_at_1": 1.0,
     "recall_at_3": 1.0,
     "recall_at_5": 1.0,
-    "avg_top1_similarity": 1.0,
+    "avg_top1_similarity": 0.9518,
     "similarity_distribution": {
-      "min": 1.0,
+      "min": 0.0,
       "max": 1.0,
-      "mean": 1.0,
+      "mean": 0.9518,
       "median": 1.0
     }
   },

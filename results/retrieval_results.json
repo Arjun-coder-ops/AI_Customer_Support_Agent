@@ -1,15 +1,15 @@
 {
-  "index_corpus_case_count": 3,
-  "held_out_query_count": 1,
+  "index_corpus_case_count": 82493,
+  "held_out_query_count": 8250,
   "evaluation_methodology": "Held-out queries evaluated against training index corpus (zero self-query leakage)",
   "recall_at_1": 1.0,
   "recall_at_3": 1.0,
   "recall_at_5": 1.0,
-  "avg_top1_similarity": 1.0,
+  "avg_top1_similarity": 0.9518,
   "similarity_distribution": {
-    "min": 1.0,
+    "min": 0.0,
     "max": 1.0,
-    "mean": 1.0,
+    "mean": 0.9518,
     "median": 1.0
   }
 }

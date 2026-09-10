@@ -7,6 +7,28 @@ from pydantic import BaseModel, Field
 
 logger = logging.getLogger(__name__)
 
+# ---------------------------------------------------------------------------
+# ISSUE 7 FIX — LLM Judge evaluation framing
+# ---------------------------------------------------------------------------
+# The run_judge_evaluations() function below tests whether the judge CAN
+# DISCRIMINATE between good, acceptable, hallucinated, and poor replies.
+# It is a JUDGE DISCRIMINATION TEST — it does NOT measure real agent output
+# quality on held-out data.
+#
+# The mean score of 8.0/10 across 4 discrimination test cases is NOT evidence
+# that the actual support agent produces 8/10 replies. It is evidence that
+# the judge assigns lower scores to hallucinated and poor replies. That is
+# what this test is designed to verify.
+#
+# To measure actual agent quality, you would need to:
+# 1. Run the full pipeline on test.jsonl queries
+# 2. Judge each generated reply
+# 3. Report the mean score across those real pipeline outputs
+#
+# That measurement is NOT implemented here and is marked as NOT YET MEASURED.
+# ---------------------------------------------------------------------------
+
+
 class JudgeRubricScore(BaseModel):
     correctness: int = Field(..., ge=0, le=2, description="Score 0-2 for factual correctness")
     groundedness: int = Field(..., ge=0, le=2, description="Score 0-2 for grounding in evidence without hallucination")
@@ -15,6 +37,7 @@ class JudgeRubricScore(BaseModel):
     professionalism: int = Field(..., ge=0, le=2, description="Score 0-2 for tone and brand appropriateness")
     total_score: int = Field(..., ge=0, le=10, description="Sum of dimension scores (0-10)")
     reasoning: str = Field(..., description="Brief explanation for assigned scores")
+
 
 class LLMJudgeEvaluator:
     """
@@ -56,29 +79,24 @@ class LLMJudgeEvaluator:
     ) -> Dict[str, Any]:
         reply_lower = generated_reply.lower()
 
-        # Factual correctness / validity
         corr = 2 if len(generated_reply) > 15 else 1
         if "error" in reply_lower or "unknown" in reply_lower:
             corr = 0
 
-        # Groundedness (penalize hallucinated promises or missing evidence)
         ground = 2
         if not retrieved_evidence and not any(k in reply_lower for k in ["escalat", "dm", "support"]):
             ground = 0
         elif any(k in reply_lower for k in ["100% refund", "$500 gift card", "guarantee tomorrow"]):
-            ground = 0  # Hallucinated policy!
+            ground = 0
 
-        # Relevance
         rel = 2 if any(w in reply_lower for w in ["order", "delay", "return", "refund", "assist", "help", "escalat", "tracking"]) else 1
         if "irrelevant" in reply_lower:
             rel = 0
 
-        # Completeness
         comp = 2 if len(generated_reply.split()) >= 10 else 1
         if len(generated_reply.split()) < 4:
             comp = 0
 
-        # Professionalism
         prof = 2
         if any(w in reply_lower for w in ["stupid", "idiot", "shut up", "damn"]):
             prof = 0
@@ -145,48 +163,63 @@ Return JSON format with total_score (sum 0-10) and reasoning.
 
         return json.loads(clean_str)
 
+
 def run_judge_evaluations() -> Dict[str, Any]:
-    logger.info("Executing LLM-as-a-Judge Evaluation Suite across diverse test cases...")
+    """
+    JUDGE DISCRIMINATION TEST: Verifies the LLM judge correctly ranks
+    4 controlled replies (Good, Acceptable, Hallucinated, Poor).
+
+    IMPORTANT: This is NOT a measure of actual agent reply quality.
+    The mean score from these 4 controlled cases MUST NOT be reported as
+    "Agent Reply Quality = X/10". It only validates judge discrimination ability.
+
+    Actual agent output quality is NOT YET MEASURED — it requires running the
+    full pipeline on real test queries and judging the outputs.
+    """
+    logger.info("Executing LLM Judge Discrimination Test (4 controlled quality cases)...")
     os.makedirs("results", exist_ok=True)
 
     judge = LLMJudgeEvaluator()
-    sample_cases = [
-        # Case 1: Excellent grounded reply (Expected Score 9-10)
+
+    # 4 controlled test cases spanning quality levels
+    # These are DESIGNED to test judge discrimination, not real pipeline outputs.
+    discrimination_cases = [
         {
             "customer_message": "Where is my delayed order #12345?",
             "predicted_intent": "shipping_delay",
             "evidence": [{"case_id": "c101", "similarity": 0.85}],
             "reply": "Hello! We apologize for the delay. Your order tracking has been updated and is out for delivery today.",
             "type": "GOOD_REPLY",
+            "expected_score_range": "9-10",
         },
-        # Case 2: Acceptable reply (Expected Score 7-8)
         {
             "customer_message": "Missing item from my delivered parcel box.",
             "predicted_intent": "missing_item",
             "evidence": [{"case_id": "c102", "similarity": 0.80}],
             "reply": "We apologize for the missing item. Please DM us your order ID so we can issue a replacement.",
             "type": "ACCEPTABLE_REPLY",
+            "expected_score_range": "7-8",
         },
-        # Case 3: Hallucinated policy reply (Expected Score 3-5)
         {
             "customer_message": "I want a refund for my item.",
             "predicted_intent": "refund_return_request",
             "evidence": [],
             "reply": "We guarantee a 100% refund of $500 gift card immediately without returning the item!",
             "type": "HALLUCINATED_REPLY",
+            "expected_score_range": "3-5",
         },
-        # Case 4: Insufficient short reply (Expected Score 2-4)
         {
             "customer_message": "My card was charged twice.",
             "predicted_intent": "payment_billing_issue",
             "evidence": [],
             "reply": "No idea.",
             "type": "POOR_SHORT_REPLY",
+            "expected_score_range": "0-3",
         },
     ]
 
     scores = []
-    for case in sample_cases:
+    for case in discrimination_cases:
         res = judge.evaluate_reply(
             customer_message=case["customer_message"],
             retrieved_evidence=case["evidence"],
@@ -194,6 +227,7 @@ def run_judge_evaluations() -> Dict[str, Any]:
             predicted_intent=case["predicted_intent"],
         )
         res["case_type"] = case["type"]
+        res["expected_score_range"] = case["expected_score_range"]
         scores.append(res)
 
     avg_total = float(np.mean([s["total_score"] for s in scores]))
@@ -202,8 +236,21 @@ def run_judge_evaluations() -> Dict[str, Any]:
     avg_relevance = float(np.mean([s["relevance"] for s in scores]))
 
     output = {
-        "evaluated_replies_count": len(scores),
-        "mean_total_score": round(avg_total, 2),
+        # --- ISSUE 14 compliance: explicit dataset/benchmark status ---
+        "evaluation_type": "JUDGE_DISCRIMINATION_TEST",
+        "dataset_status": "SYNTHETIC/CONTROLLED TEST — 4 hand-crafted cases spanning quality spectrum",
+        "benchmark_caveat": (
+            "This test verifies the judge's ability to discriminate between Good, Acceptable, "
+            "Hallucinated, and Poor replies. The mean_total_score reflects the AVERAGE across "
+            "these 4 controlled cases — it is NOT a measure of actual agent reply quality. "
+            "Do NOT report this as 'Agent Reply Quality = X/10'. "
+            "Actual pipeline output quality is NOT YET MEASURED."
+        ),
+        "actual_agent_quality": "NOT YET MEASURED — requires full pipeline evaluation on test.jsonl",
+
+        # --- Discrimination test results ---
+        "discrimination_test_case_count": len(scores),
+        "discrimination_test_mean_score": round(avg_total, 2),
         "mean_correctness": round(avg_correctness, 2),
         "mean_groundedness": round(avg_groundedness, 2),
         "mean_relevance": round(avg_relevance, 2),
@@ -213,9 +260,15 @@ def run_judge_evaluations() -> Dict[str, Any]:
     with open("results/judge_results.json", "w", encoding="utf-8") as f:
         json.dump(output, f, indent=2)
 
-    logger.info(f"LLM Judge Evaluation complete: Mean Total Score = {avg_total}/10 across {len(scores)} cases.")
+    logger.info(
+        f"LLM Judge Discrimination Test complete: Mean={avg_total}/10 across {len(scores)} controlled cases. "
+        "NOTE: This is a judge calibration test, NOT real pipeline quality measurement."
+    )
     return output
 
+
 if __name__ == "__main__":
+    import sys
+    logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
     res = run_judge_evaluations()
     print(json.dumps(res, indent=2))

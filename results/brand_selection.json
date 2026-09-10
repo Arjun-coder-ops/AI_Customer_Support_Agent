@@ -4,25 +4,760 @@
   "candidates_evaluated": [
     {
       "brand": "AmazonHelp",
-      "outbound_tweets": 5,
-      "total_conversations": 3,
-      "resolved_conversations": 3,
-      "avg_turn_length": 3.33
+      "outbound_tweets": 169840,
+      "total_conversations": 82493,
+      "resolved_conversations": 82493,
+      "avg_turn_length": 4.52
     },
     {
       "brand": "AppleSupport",
-      "outbound_tweets": 1,
-      "total_conversations": 1,
-      "resolved_conversations": 1,
-      "avg_turn_length": 2.0
+      "outbound_tweets": 106860,
+      "total_conversations": 80650,
+      "resolved_conversations": 80650,
+      "avg_turn_length": 2.96
     },
     {
       "brand": "Uber_Support",
-      "outbound_tweets": 1,
-      "total_conversations": 1,
-      "resolved_conversations": 1,
-      "avg_turn_length": 2.0
+      "outbound_tweets": 56270,
+      "total_conversations": 41891,
+      "resolved_conversations": 41891,
+      "avg_turn_length": 3.06
+    },
+    {
+      "brand": "SpotifyCares",
+      "outbound_tweets": 43265,
+      "total_conversations": 28249,
+      "resolved_conversations": 28249,
+      "avg_turn_length": 3.25
+    },
+    {
+      "brand": "AmericanAir",
+      "outbound_tweets": 36764,
+      "total_conversations": 26207,
+      "resolved_conversations": 26207,
+      "avg_turn_length": 3.29
+    },
+    {
+      "brand": "Delta",
+      "outbound_tweets": 42253,
+      "total_conversations": 26039,
+      "resolved_conversations": 26039,
+      "avg_turn_length": 3.34
+    },
+    {
+      "brand": "comcastcares",
+      "outbound_tweets": 33031,
+      "total_conversations": 23908,
+      "resolved_conversations": 23908,
+      "avg_turn_length": 3.01
+    },
+    {
+      "brand": "TMobileHelp",
+      "outbound_tweets": 34317,
+      "total_conversations": 22647,
+      "resolved_conversations": 22647,
+      "avg_turn_length": 3.52
+    },
+    {
+      "brand": "SouthwestAir",
+      "outbound_tweets": 28977,
+      "total_conversations": 21521,
+      "resolved_conversations": 21521,
+      "avg_turn_length": 2.98
+    },
+    {
+      "brand": "Ask_Spectrum",
+      "outbound_tweets": 25860,
+      "total_conversations": 18446,
+      "resolved_conversations": 18446,
+      "avg_turn_length": 3.16
+    },
+    {
+      "brand": "Tesco",
+      "outbound_tweets": 38573,
+      "total_conversations": 16653,
+      "resolved_conversations": 16653,
+      "avg_turn_length": 4.33
+    },
+    {
+      "brand": "British_Airways",
+      "outbound_tweets": 29361,
+      "total_conversations": 16378,
+      "resolved_conversations": 16378,
+      "avg_turn_length": 3.68
+    },
+    {
+      "brand": "UPSHelp",
+      "outbound_tweets": 17817,
+      "total_conversations": 15269,
+      "resolved_conversations": 15269,
+      "avg_turn_length": 2.76
+    },
+    {
+      "brand": "hulu_support",
+      "outbound_tweets": 21872,
+      "total_conversations": 14906,
+      "resolved_conversations": 14906,
+      "avg_turn_length": 3.21
+    },
+    {
+      "brand": "VirginTrains",
+      "outbound_tweets": 27817,
+      "total_conversations": 14818,
+      "resolved_conversations": 14818,
+      "avg_turn_length": 4.42
+    },
+    {
+      "brand": "ChipotleTweets",
+      "outbound_tweets": 18749,
+      "total_conversations": 14390,
+      "resolved_conversations": 14390,
+      "avg_turn_length": 2.91
+    },
+    {
+      "brand": "XboxSupport",
+      "outbound_tweets": 24557,
+      "total_conversations": 13390,
+      "resolved_conversations": 13390,
+      "avg_turn_length": 4.15
+    },
+    {
+      "brand": "sprintcare",
+      "outbound_tweets": 22381,
+      "total_conversations": 13370,
+      "resolved_conversations": 13370,
+      "avg_turn_length": 3.79
+    },
+    {
+      "brand": "AskPlayStation",
+      "outbound_tweets": 19098,
+      "total_conversations": 12525,
+      "resolved_conversations": 12525,
+      "avg_turn_length": 3.42
+    },
+    {
+      "brand": "AskTarget",
+      "outbound_tweets": 13218,
+      "total_conversations": 11118,
+      "resolved_conversations": 11118,
+      "avg_turn_length": 2.74
+    },
+    {
+      "brand": "ATVIAssist",
+      "outbound_tweets": 17650,
+      "total_conversations": 11093,
+      "resolved_conversations": 11093,
+      "avg_turn_length": 4.33
+    },
+    {
+      "brand": "sainsburys",
+      "outbound_tweets": 19466,
+      "total_conversations": 10836,
+      "resolved_conversations": 10836,
+      "avg_turn_length": 3.87
+    },
+    {
+      "brand": "GWRHelp",
+      "outbound_tweets": 19364,
+      "total_conversations": 10661,
+      "resolved_conversations": 10661,
+      "avg_turn_length": 4.34
+    },
+    {
+      "brand": "AskLyft",
+      "outbound_tweets": 11809,
+      "total_conversations": 10143,
+      "resolved_conversations": 10143,
+      "avg_turn_length": 2.65
+    },
+    {
+      "brand": "O2",
+      "outbound_tweets": 16212,
+      "total_conversations": 9533,
+      "resolved_conversations": 9533,
+      "avg_turn_length": 3.81
+    },
+    {
+      "brand": "AskPayPal",
+      "outbound_tweets": 11298,
+      "total_conversations": 9475,
+      "resolved_conversations": 9475,
+      "avg_turn_length": 2.79
+    },
+    {
+      "brand": "Safaricom_Care",
+      "outbound_tweets": 16077,
+      "total_conversations": 9337,
+      "resolved_conversations": 9337,
+      "avg_turn_length": 3.61
+    },
+    {
+      "brand": "VerizonSupport",
+      "outbound_tweets": 17966,
+      "total_conversations": 8294,
+      "resolved_conversations": 8294,
+      "avg_turn_length": 5.17
+    },
+    {
+      "brand": "McDonalds",
+      "outbound_tweets": 8478,
+      "total_conversations": 8132,
+      "resolved_conversations": 8132,
+      "avg_turn_length": 2.4
+    },
+    {
+      "brand": "marksandspencer",
+      "outbound_tweets": 11504,
+      "total_conversations": 7940,
+      "resolved_conversations": 7940,
+      "avg_turn_length": 3.22
+    },
+    {
+      "brand": "ArgosHelpers",
+      "outbound_tweets": 12174,
+      "total_conversations": 7536,
+      "resolved_conversations": 7536,
+      "avg_turn_length": 3.74
+    },
+    {
+      "brand": "idea_cares",
+      "outbound_tweets": 15724,
+      "total_conversations": 7514,
+      "resolved_conversations": 7514,
+      "avg_turn_length": 4.62
+    },
+    {
+      "brand": "ChaseSupport",
+      "outbound_tweets": 8811,
+      "total_conversations": 6789,
+      "resolved_conversations": 6789,
+      "avg_turn_length": 2.74
+    },
+    {
+      "brand": "AirAsiaSupport",
+      "outbound_tweets": 12829,
+      "total_conversations": 6763,
+      "resolved_conversations": 6763,
+      "avg_turn_length": 3.99
+    },
+    {
+      "brand": "AldiUK",
+      "outbound_tweets": 8114,
+      "total_conversations": 6608,
+      "resolved_conversations": 6608,
+      "avg_turn_length": 2.76
+    },
+    {
+      "brand": "BofA_Help",
+      "outbound_tweets": 12683,
+      "total_conversations": 6541,
+      "resolved_conversations": 6541,
+      "avg_turn_length": 3.76
+    },
+    {
+      "brand": "SW_Help",
+      "outbound_tweets": 12231,
+      "total_conversations": 6187,
+      "resolved_conversations": 6187,
+      "avg_turn_length": 4.55
+    },
+    {
+      "brand": "AirbnbHelp",
+      "outbound_tweets": 8875,
+      "total_conversations": 6030,
+      "resolved_conversations": 6030,
+      "avg_turn_length": 3.32
+    },
+    {
+      "brand": "Ask_WellsFargo",
+      "outbound_tweets": 7578,
+      "total_conversations": 6013,
+      "resolved_conversations": 6013,
+      "avg_turn_length": 2.73
+    },
+    {
+      "brand": "Morrisons",
+      "outbound_tweets": 10126,
+      "total_conversations": 5928,
+      "resolved_conversations": 5928,
+      "avg_turn_length": 3.48
+    },
+    {
+      "brand": "AskeBay",
+      "outbound_tweets": 9686,
+      "total_conversations": 5622,
+      "resolved_conversations": 5622,
+      "avg_turn_length": 3.72
+    },
+    {
+      "brand": "AlaskaAir",
+      "outbound_tweets": 7478,
+      "total_conversations": 5585,
+      "resolved_conversations": 5585,
+      "avg_turn_length": 2.99
+    },
+    {
+      "brand": "JetBlue",
+      "outbound_tweets": 8020,
+      "total_conversations": 5156,
+      "resolved_conversations": 5156,
+      "avg_turn_length": 3.42
+    },
+    {
+      "brand": "AdobeCare",
+      "outbound_tweets": 9917,
+      "total_conversations": 5091,
+      "resolved_conversations": 5091,
+      "avg_turn_length": 4.12
+    },
+    {
+      "brand": "CoxHelp",
+      "outbound_tweets": 7861,
+      "total_conversations": 4840,
+      "resolved_conversations": 4840,
+      "avg_turn_length": 3.55
+    },
+    {
+      "brand": "MicrosoftHelps",
+      "outbound_tweets": 11304,
+      "total_conversations": 4437,
+      "resolved_conversations": 4437,
+      "avg_turn_length": 5.48
+    },
+    {
+      "brand": "AskAmex",
+      "outbound_tweets": 11358,
+      "total_conversations": 4279,
+      "resolved_conversations": 4279,
+      "avg_turn_length": 4.84
+    },
+    {
+      "brand": "airtel_care",
+      "outbound_tweets": 9881,
+      "total_conversations": 4013,
+      "resolved_conversations": 4013,
+      "avg_turn_length": 4.5
+    },
+    {
+      "brand": "HPSupport",
+      "outbound_tweets": 7200,
+      "total_conversations": 3840,
+      "resolved_conversations": 3840,
+      "avg_turn_length": 3.26
+    },
+    {
+      "brand": "LondonMidland",
+      "outbound_tweets": 6822,
+      "total_conversations": 3644,
+      "resolved_conversations": 3644,
+      "avg_turn_length": 4.38
+    },
+    {
+      "brand": "GreggsOfficial",
+      "outbound_tweets": 4522,
+      "total_conversations": 3338,
+      "resolved_conversations": 3338,
+      "avg_turn_length": 3.26
+    },
+    {
+      "brand": "AzureSupport",
+      "outbound_tweets": 7565,
+      "total_conversations": 3309,
+      "resolved_conversations": 3309,
+      "avg_turn_length": 4.45
+    },
+    {
+      "brand": "GloCare",
+      "outbound_tweets": 6308,
+      "total_conversations": 3217,
+      "resolved_conversations": 3217,
+      "avg_turn_length": 4.64
+    },
+    {
+      "brand": "DropboxSupport",
+      "outbound_tweets": 5954,
+      "total_conversations": 3173,
+      "resolved_conversations": 3173,
+      "avg_turn_length": 3.63
+    },
+    {
+      "brand": "AskPapaJohns",
+      "outbound_tweets": 3908,
+      "total_conversations": 3153,
+      "resolved_conversations": 3153,
+      "avg_turn_length": 2.83
+    },
+    {
+      "brand": "TacoBellTeam",
+      "outbound_tweets": 4082,
+      "total_conversations": 3107,
+      "resolved_conversations": 3107,
+      "avg_turn_length": 2.89
+    },
+    {
+      "brand": "Postmates_Help",
+      "outbound_tweets": 3346,
+      "total_conversations": 3001,
+      "resolved_conversations": 3001,
+      "avg_turn_length": 2.58
+    },
+    {
+      "brand": "CenturyLinkHelp",
+      "outbound_tweets": 3801,
+      "total_conversations": 2952,
+      "resolved_conversations": 2952,
+      "avg_turn_length": 3.04
+    },
+    {
+      "brand": "VirginAtlantic",
+      "outbound_tweets": 4318,
+      "total_conversations": 2759,
+      "resolved_conversations": 2759,
+      "avg_turn_length": 3.69
+    },
+    {
+      "brand": "Walmart",
+      "outbound_tweets": 2643,
+      "total_conversations": 2404,
+      "resolved_conversations": 2404,
+      "avg_turn_length": 2.48
+    },
+    {
+      "brand": "AskCiti",
+      "outbound_tweets": 4081,
+      "total_conversations": 2314,
+      "resolved_conversations": 2314,
+      "avg_turn_length": 3.4
+    },
+    {
+      "brand": "nationalrailenq",
+      "outbound_tweets": 4444,
+      "total_conversations": 2249,
+      "resolved_conversations": 2249,
+      "avg_turn_length": 4.42
+    },
+    {
+      "brand": "VirginAmerica",
+      "outbound_tweets": 2815,
+      "total_conversations": 2099,
+      "resolved_conversations": 2099,
+      "avg_turn_length": 3.05
+    },
+    {
+      "brand": "ATT",
+      "outbound_tweets": 2790,
+      "total_conversations": 2027,
+      "resolved_conversations": 2027,
+      "avg_turn_length": 3.28
+    },
+    {
+      "brand": "KFC_UKI_Help",
+      "outbound_tweets": 2103,
+      "total_conversations": 2017,
+      "resolved_conversations": 2017,
+      "avg_turn_length": 2.51
+    },
+    {
+      "brand": "DellCares",
+      "outbound_tweets": 5336,
+      "total_conversations": 1988,
+      "resolved_conversations": 1988,
+      "avg_turn_length": 4.99
+    },
+    {
+      "brand": "askpanera",
+      "outbound_tweets": 2153,
+      "total_conversations": 1978,
+      "resolved_conversations": 1978,
+      "avg_turn_length": 2.47
+    },
+    {
+      "brand": "IHGService",
+      "outbound_tweets": 2643,
+      "total_conversations": 1745,
+      "resolved_conversations": 1745,
+      "avg_turn_length": 3.13
+    },
+    {
+      "brand": "TfL",
+      "outbound_tweets": 2243,
+      "total_conversations": 1569,
+      "resolved_conversations": 1569,
+      "avg_turn_length": 3.26
+    },
+    {
+      "brand": "NikeSupport",
+      "outbound_tweets": 3468,
+      "total_conversations": 1559,
+      "resolved_conversations": 1559,
+      "avg_turn_length": 4.98
+    },
+    {
+      "brand": "ArbysCares",
+      "outbound_tweets": 1904,
+      "total_conversations": 1555,
+      "resolved_conversations": 1555,
+      "avg_turn_length": 2.7
+    },
+    {
+      "brand": "DoorDash_Help",
+      "outbound_tweets": 1581,
+      "total_conversations": 1506,
+      "resolved_conversations": 1506,
+      "avg_turn_length": 2.53
+    },
+    {
+      "brand": "GoDaddyHelp",
+      "outbound_tweets": 1965,
+      "total_conversations": 1450,
+      "resolved_conversations": 1450,
+      "avg_turn_length": 3.1
+    },
+    {
+      "brand": "DunkinDonuts",
+      "outbound_tweets": 1290,
+      "total_conversations": 1258,
+      "resolved_conversations": 1258,
+      "avg_turn_length": 2.27
+    },
+    {
+      "brand": "sizehelpteam",
+      "outbound_tweets": 1482,
+      "total_conversations": 1251,
+      "resolved_conversations": 1251,
+      "avg_turn_length": 2.82
+    },
+    {
+      "brand": "TwitterSupport",
+      "outbound_tweets": 1290,
+      "total_conversations": 1219,
+      "resolved_conversations": 1219,
+      "avg_turn_length": 3.2
+    },
+    {
+      "brand": "Kimpton",
+      "outbound_tweets": 1339,
+      "total_conversations": 1053,
+      "resolved_conversations": 1053,
+      "avg_turn_length": 2.73
+    },
+    {
+      "brand": "AsurionCares",
+      "outbound_tweets": 1898,
+      "total_conversations": 1035,
+      "resolved_conversations": 1035,
+      "avg_turn_length": 4.1
+    },
+    {
+      "brand": "SCsupport",
+      "outbound_tweets": 1329,
+      "total_conversations": 980,
+      "resolved_conversations": 980,
+      "avg_turn_length": 3.0
+    },
+    {
+      "brand": "AWSSupport",
+      "outbound_tweets": 1035,
+      "total_conversations": 904,
+      "resolved_conversations": 904,
+      "avg_turn_length": 2.8
+    },
+    {
+      "brand": "NortonSupport",
+      "outbound_tweets": 2011,
+      "total_conversations": 897,
+      "resolved_conversations": 897,
+      "avg_turn_length": 4.7
+    },
+    {
+      "brand": "AskRBC",
+      "outbound_tweets": 1011,
+      "total_conversations": 837,
+      "resolved_conversations": 837,
+      "avg_turn_length": 2.86
+    },
+    {
+      "brand": "NeweggService",
+      "outbound_tweets": 1079,
+      "total_conversations": 795,
+      "resolved_conversations": 795,
+      "avg_turn_length": 3.11
+    },
+    {
+      "brand": "PandoraSupport",
+      "outbound_tweets": 1043,
+      "total_conversations": 724,
+      "resolved_conversations": 724,
+      "avg_turn_length": 3.17
+    },
+    {
+      "brand": "VMUcare",
+      "outbound_tweets": 1381,
+      "total_conversations": 720,
+      "resolved_conversations": 720,
+      "avg_turn_length": 4.44
+    },
+    {
+      "brand": "HiltonHelp",
+      "outbound_tweets": 833,
+      "total_conversations": 714,
+      "resolved_conversations": 714,
+      "avg_turn_length": 2.82
+    },
+    {
+      "brand": "BoostCare",
+      "outbound_tweets": 907,
+      "total_conversations": 663,
+      "resolved_conversations": 663,
+      "avg_turn_length": 3.17
+    },
+    {
+      "brand": "PearsonSupport",
+      "outbound_tweets": 841,
+      "total_conversations": 604,
+      "resolved_conversations": 604,
+      "avg_turn_length": 3.06
+    },
+    {
+      "brand": "GooglePlayMusic",
+      "outbound_tweets": 804,
+      "total_conversations": 544,
+      "resolved_conversations": 544,
+      "avg_turn_length": 3.55
+    },
+    {
+      "brand": "ask_progressive",
+      "outbound_tweets": 612,
+      "total_conversations": 543,
+      "resolved_conversations": 543,
+      "avg_turn_length": 2.6
+    },
+    {
+      "brand": "YahooCare",
+      "outbound_tweets": 906,
+      "total_conversations": 538,
+      "resolved_conversations": 538,
+      "avg_turn_length": 4.05
+    },
+    {
+      "brand": "USCellularCares",
+      "outbound_tweets": 1177,
+      "total_conversations": 529,
+      "resolved_conversations": 529,
+      "avg_turn_length": 4.88
+    },
+    {
+      "brand": "MTNC_Care",
+      "outbound_tweets": 784,
+      "total_conversations": 529,
+      "resolved_conversations": 529,
+      "avg_turn_length": 3.74
+    },
+    {
+      "brand": "asksalesforce",
+      "outbound_tweets": 710,
+      "total_conversations": 485,
+      "resolved_conversations": 485,
+      "avg_turn_length": 3.38
+    },
+    {
+      "brand": "MOO",
+      "outbound_tweets": 630,
+      "total_conversations": 477,
+      "resolved_conversations": 477,
+      "avg_turn_length": 2.98
+    },
+    {
+      "brand": "askvisa",
+      "outbound_tweets": 709,
+      "total_conversations": 473,
+      "resolved_conversations": 473,
+      "avg_turn_length": 2.98
+    },
+    {
+      "brand": "OPPOCareIN",
+      "outbound_tweets": 879,
+      "total_conversations": 451,
+      "resolved_conversations": 451,
+      "avg_turn_length": 4.49
+    },
+    {
+      "brand": "AskVirginMoney",
+      "outbound_tweets": 914,
+      "total_conversations": 396,
+      "resolved_conversations": 396,
+      "avg_turn_length": 4.87
+    },
+    {
+      "brand": "KeyBank_Help",
+      "outbound_tweets": 555,
+      "total_conversations": 372,
+      "resolved_conversations": 372,
+      "avg_turn_length": 3.29
+    },
+    {
+      "brand": "AskRobinhood",
+      "outbound_tweets": 432,
+      "total_conversations": 353,
+      "resolved_conversations": 353,
+      "avg_turn_length": 2.91
+    },
+    {
+      "brand": "AskSeagate",
+      "outbound_tweets": 639,
+      "total_conversations": 343,
+      "resolved_conversations": 343,
+      "avg_turn_length": 3.93
+    },
+    {
+      "brand": "AskTigogh",
+      "outbound_tweets": 715,
+      "total_conversations": 322,
+      "resolved_conversations": 322,
+      "avg_turn_length": 5.08
+    },
+    {
+      "brand": "JackBox",
+      "outbound_tweets": 266,
+      "total_conversations": 233,
+      "resolved_conversations": 233,
+      "avg_turn_length": 2.55
+    },
+    {
+      "brand": "AskDSC",
+      "outbound_tweets": 210,
+      "total_conversations": 198,
+      "resolved_conversations": 198,
+      "avg_turn_length": 2.27
+    },
+    {
+      "brand": "mediatemplehelp",
+      "outbound_tweets": 305,
+      "total_conversations": 174,
+      "resolved_conversations": 174,
+      "avg_turn_length": 3.51
+    },
+    {
+      "brand": "CarlsJr",
+      "outbound_tweets": 196,
+      "total_conversations": 166,
+      "resolved_conversations": 166,
+      "avg_turn_length": 2.73
+    },
+    {
+      "brand": "HotelTonightCX",
+      "outbound_tweets": 152,
+      "total_conversations": 123,
+      "resolved_conversations": 123,
+      "avg_turn_length": 2.75
+    },
+    {
+      "brand": "OfficeSupport",
+      "outbound_tweets": 218,
+      "total_conversations": 97,
+      "resolved_conversations": 97,
+      "avg_turn_length": 4.64
     }
   ],
-  "is_real_dataset": false
+  "is_real_dataset": true
 }
