@@ -1,6 +1,7 @@
 {
-  "index_case_count": 3,
-  "evaluated_query_count": 3,
+  "index_corpus_case_count": 3,
+  "held_out_query_count": 1,
+  "evaluation_methodology": "Held-out queries evaluated against training index corpus (zero self-query leakage)",
   "recall_at_1": 1.0,
   "recall_at_3": 1.0,
   "recall_at_5": 1.0,

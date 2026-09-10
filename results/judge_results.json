@@ -1,9 +1,9 @@
 {
-  "evaluated_replies_count": 3,
-  "mean_total_score": 10.0,
-  "mean_correctness": 2.0,
-  "mean_groundedness": 2.0,
-  "mean_relevance": 2.0,
+  "evaluated_replies_count": 4,
+  "mean_total_score": 8.0,
+  "mean_correctness": 1.75,
+  "mean_groundedness": 1.0,
+  "mean_relevance": 1.75,
   "detailed_scores": [
     {
       "correctness": 2,
@@ -12,7 +12,8 @@
       "completeness": 2,
       "professionalism": 2,
       "total_score": 10,
-      "reasoning": "Heuristic evaluation based on grounding evidence, keyword relevance, and length."
+      "reasoning": "Groundedness=2, Relevance=2, Completeness=2, Professionalism=2",
+      "case_type": "GOOD_REPLY"
     },
     {
       "correctness": 2,
@@ -21,16 +22,28 @@
       "completeness": 2,
       "professionalism": 2,
       "total_score": 10,
-      "reasoning": "Heuristic evaluation based on grounding evidence, keyword relevance, and length."
+      "reasoning": "Groundedness=2, Relevance=2, Completeness=2, Professionalism=2",
+      "case_type": "ACCEPTABLE_REPLY"
     },
     {
       "correctness": 2,
-      "groundedness": 2,
+      "groundedness": 0,
       "relevance": 2,
       "completeness": 2,
       "professionalism": 2,
-      "total_score": 10,
-      "reasoning": "Heuristic evaluation based on grounding evidence, keyword relevance, and length."
+      "total_score": 8,
+      "reasoning": "Groundedness=0, Relevance=2, Completeness=2, Professionalism=2",
+      "case_type": "HALLUCINATED_REPLY"
+    },
+    {
+      "correctness": 1,
+      "groundedness": 0,
+      "relevance": 1,
+      "completeness": 0,
+      "professionalism": 2,
+      "total_score": 4,
+      "reasoning": "Groundedness=0, Relevance=1, Completeness=0, Professionalism=2",
+      "case_type": "POOR_SHORT_REPLY"
     }
   ]
 }
