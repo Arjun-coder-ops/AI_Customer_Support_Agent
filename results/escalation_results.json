@@ -1,0 +1,47 @@
+{
+  "total_test_cases": 8,
+  "correct_auto_handle": 3,
+  "incorrect_auto_handle_false_negative": 0,
+  "correct_escalation": 5,
+  "unnecessary_escalation_false_positive": 0,
+  "auto_handle_rate": 0.375,
+  "escalation_rate": 0.625,
+  "false_auto_handling_rate": 0.0,
+  "precision": 1.0,
+  "recall": 1.0,
+  "f1_score": 1.0,
+  "reason_code_distribution": {
+    "INSUFFICIENT_CONTEXT": 1,
+    "SENSITIVE_REQUEST": 1,
+    "ACCOUNT_SPECIFIC_ACTION_REQUIRED": 1,
+    "LOW_INTENT_CONFIDENCE": 1,
+    "NO_RELEVANT_HISTORICAL_EVIDENCE": 1
+  },
+  "threshold_sensitivity_curve": [
+    {
+      "threshold": 0.5,
+      "escalation_rate": 0.5,
+      "auto_handle_rate": 0.5
+    },
+    {
+      "threshold": 0.6,
+      "escalation_rate": 0.625,
+      "auto_handle_rate": 0.375
+    },
+    {
+      "threshold": 0.7,
+      "escalation_rate": 0.625,
+      "auto_handle_rate": 0.375
+    },
+    {
+      "threshold": 0.8,
+      "escalation_rate": 0.75,
+      "auto_handle_rate": 0.25
+    },
+    {
+      "threshold": 0.9,
+      "escalation_rate": 1.0,
+      "auto_handle_rate": 0.0
+    }
+  ]
+}

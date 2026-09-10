@@ -1,0 +1,36 @@
+{
+  "evaluated_replies_count": 3,
+  "mean_total_score": 10.0,
+  "mean_correctness": 2.0,
+  "mean_groundedness": 2.0,
+  "mean_relevance": 2.0,
+  "detailed_scores": [
+    {
+      "correctness": 2,
+      "groundedness": 2,
+      "relevance": 2,
+      "completeness": 2,
+      "professionalism": 2,
+      "total_score": 10,
+      "reasoning": "Heuristic evaluation based on grounding evidence, keyword relevance, and length."
+    },
+    {
+      "correctness": 2,
+      "groundedness": 2,
+      "relevance": 2,
+      "completeness": 2,
+      "professionalism": 2,
+      "total_score": 10,
+      "reasoning": "Heuristic evaluation based on grounding evidence, keyword relevance, and length."
+    },
+    {
+      "correctness": 2,
+      "groundedness": 2,
+      "relevance": 2,
+      "completeness": 2,
+      "professionalism": 2,
+      "total_score": 10,
+      "reasoning": "Heuristic evaluation based on grounding evidence, keyword relevance, and length."
+    }
+  ]
+}

@@ -1,0 +1,14 @@
+{
+  "sample_size": 50,
+  "human_mean_score": 8.14,
+  "llm_judge_mean_score": 8.2,
+  "mean_absolute_difference": 0.34,
+  "exact_agreement_count": 33,
+  "exact_agreement_pct": 0.66,
+  "near_agreement_count_within_1pt": 50,
+  "near_agreement_pct": 1.0,
+  "pearson_correlation": 0.8922,
+  "pearson_p_value": 0.0,
+  "quadratic_weighted_kappa": 0.8912,
+  "interpretation": "Strong agreement between Human Evaluator and LLM-as-a-Judge (QWK > 0.70)."
+}

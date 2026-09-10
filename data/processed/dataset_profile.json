@@ -1,0 +1,23 @@
+{
+  "is_real_dataset": false,
+  "dataset_status": "TEST SAMPLE (GENUINE DATASET PENDING INGESTION)",
+  "total_tweets": 14,
+  "inbound_tweets": 7,
+  "outbound_tweets": 7,
+  "unique_authors": 8,
+  "unique_brands_count": 3,
+  "brands": {
+    "AmazonHelp": 5,
+    "AppleSupport": 1,
+    "Uber_Support": 1
+  },
+  "total_conversations": 5,
+  "resolved_interactions": 5,
+  "incomplete_threads": 0,
+  "avg_conversation_length": 2.8,
+  "max_conversation_length": 4,
+  "avg_text_length_chars": 93.29,
+  "missing_parent_references": 0,
+  "duplicate_text_count": 0,
+  "duplicate_rate": 0.0
+}

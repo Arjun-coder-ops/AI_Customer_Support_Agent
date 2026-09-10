@@ -1,0 +1,14 @@
+{
+  "index_case_count": 3,
+  "evaluated_query_count": 3,
+  "recall_at_1": 1.0,
+  "recall_at_3": 1.0,
+  "recall_at_5": 1.0,
+  "avg_top1_similarity": 1.0,
+  "similarity_distribution": {
+    "min": 1.0,
+    "max": 1.0,
+    "mean": 1.0,
+    "median": 1.0
+  }
+}

@@ -1,0 +1,81 @@
+version: "1.0"
+intents:
+  - name: "shipping_delay"
+    description: "Customer inquiring about a delayed order, package tracking, or late delivery."
+    inclusion_criteria: "Mentions expected delivery date passed, tracking showing delayed, or asking where the order is."
+    exclusion_criteria: "Item arrived but damaged or missing items."
+    representative_examples:
+      - "My order #12345 was supposed to arrive yesterday but it shows delayed. Where is it?"
+      - "Tracking status hasn't updated in 3 days. Is my package lost?"
+    ambiguous_examples:
+      - "Order arrived late and the box was torn."
+
+  - name: "missing_item"
+    description: "Customer received a package but one or more items/parts are missing from the shipment."
+    inclusion_criteria: "Package delivered, but contents incomplete or items omitted."
+    exclusion_criteria: "Entire package never delivered or damaged item."
+    representative_examples:
+      - "I received my package today but one of the items is missing from the box!"
+      - "Only 2 out of 3 ordered books were inside the parcel."
+    ambiguous_examples:
+      - "Package was opened and empty."
+
+  - name: "order_cancellation"
+    description: "Customer requesting to cancel an active order before or during shipment."
+    inclusion_criteria: "Explicit request to cancel order or change mind before delivery."
+    exclusion_criteria: "Requesting a return or refund for an item already delivered."
+    representative_examples:
+      - "Can I cancel order #98765 before it ships out?"
+      - "I ordered by mistake 10 mins ago, please stop shipping."
+    ambiguous_examples:
+      - "I want to cancel my subscription and return last month's box."
+
+  - name: "refund_return_request"
+    description: "Customer asking how to return a delivered item or requesting a refund."
+    inclusion_criteria: "Item delivered; customer wants refund, return label, or money back."
+    exclusion_criteria: "Pre-shipment order cancellation."
+    representative_examples:
+      - "How do I return a damaged product for a full refund?"
+      - "I submitted a return 5 days ago, when will my refund be processed?"
+    ambiguous_examples:
+      - "Package never arrived and I want my money back."
+
+  - name: "account_access_issue"
+    description: "Customer having trouble logging in, resetting password, 2FA, or locked out of account."
+    inclusion_criteria: "Mentions login error, password reset, verification code, locked account."
+    exclusion_criteria: "Payment decline or billing dispute."
+    representative_examples:
+      - "Locked out of my account. Reset link is not coming to my email."
+      - "Cannot complete 2FA login on the mobile app."
+    ambiguous_examples:
+      - "Cannot access my account to pay my bill."
+
+  - name: "payment_billing_issue"
+    description: "Customer reporting double charges, unauthorized fees, payment method errors, or billing discrepancies."
+    inclusion_criteria: "Mentions double charge, credit card error, unexpected fee, invoice."
+    exclusion_criteria: "Standard refund request for a returned item."
+    representative_examples:
+      - "I was charged twice for my order this morning. Please refund duplicate charge."
+      - "Payment failed at checkout but my card was debited."
+    ambiguous_examples:
+      - "Why did my order get cancelled after payment went through?"
+
+  - name: "product_defect_damage"
+    description: "Customer reporting that the item received is defective, broken, expired, or faulty."
+    inclusion_criteria: "Physical damage, functional flaw, wrong item version sent."
+    exclusion_criteria: "Missing item from an otherwise intact box."
+    representative_examples:
+      - "Screen on the device I received is cracked out of the box."
+      - "Item stopped working after 2 hours of use."
+    ambiguous_examples:
+      - "Box was crushed but item inside seems fine."
+
+  - name: "general_inquiry_feedback"
+    description: "General product questions, feedback, store hours, stock availability, or compliments."
+    inclusion_criteria: "Questions about product features, store location, general feedback."
+    exclusion_criteria: "Specific order tracking, return, or account problems."
+    representative_examples:
+      - "Will this item be restocked in size medium anytime soon?"
+      - "Great customer service at your downtown store today!"
+    ambiguous_examples:
+      - "Do you offer free shipping on returns?"

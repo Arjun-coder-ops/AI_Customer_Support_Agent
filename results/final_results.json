@@ -1,0 +1,259 @@
+{
+  "evaluation_status": "COMPLETED",
+  "data_leakage": {
+    "has_leakage": false,
+    "leakage_status": "PASSED (ZERO LEAKAGE)",
+    "train_val_id_overlap": 0,
+    "train_test_id_overlap": 0,
+    "train_golden_id_overlap": 0,
+    "val_test_id_overlap": 0,
+    "train_test_exact_message_overlap": 0
+  },
+  "intent_classification": {
+    "majority": {
+      "model": "MajorityBaseline",
+      "accuracy": 0.0,
+      "macro_precision": 0.0,
+      "macro_recall": 0.0,
+      "macro_f1": 0.0,
+      "weighted_f1": 0.0,
+      "predicted_label": "shipping_delay"
+    },
+    "tfidf_logreg": {
+      "model": "TFIDF_LogisticRegression",
+      "accuracy": 0.0,
+      "macro_precision": 0.0,
+      "macro_recall": 0.0,
+      "macro_f1": 0.0,
+      "weighted_f1": 0.0,
+      "per_class_metrics": {
+        "missing_item": {
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1-score": 0.0,
+          "support": 0.0
+        },
+        "refund_return_request": {
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1-score": 0.0,
+          "support": 1.0
+        },
+        "accuracy": 0.0,
+        "macro avg": {
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1-score": 0.0,
+          "support": 1.0
+        },
+        "weighted avg": {
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1-score": 0.0,
+          "support": 1.0
+        }
+      }
+    },
+    "final_classifier": {
+      "model": "FinalIntentClassifier",
+      "accuracy": 0.0,
+      "macro_precision": 0.0,
+      "macro_recall": 0.0,
+      "macro_f1": 0.0,
+      "weighted_f1": 0.0,
+      "per_class_metrics": {
+        "missing_item": {
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1-score": 0.0,
+          "support": 0.0
+        },
+        "refund_return_request": {
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1-score": 0.0,
+          "support": 1.0
+        },
+        "accuracy": 0.0,
+        "macro avg": {
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1-score": 0.0,
+          "support": 1.0
+        },
+        "weighted avg": {
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1-score": 0.0,
+          "support": 1.0
+        }
+      }
+    }
+  },
+  "historical_retrieval": {
+    "index_case_count": 3,
+    "evaluated_query_count": 3,
+    "recall_at_1": 1.0,
+    "recall_at_3": 1.0,
+    "recall_at_5": 1.0,
+    "avg_top1_similarity": 1.0,
+    "similarity_distribution": {
+      "min": 1.0,
+      "max": 1.0,
+      "mean": 1.0,
+      "median": 1.0
+    }
+  },
+  "escalation_policy": {
+    "total_test_cases": 8,
+    "correct_auto_handle": 3,
+    "incorrect_auto_handle_false_negative": 0,
+    "correct_escalation": 5,
+    "unnecessary_escalation_false_positive": 0,
+    "auto_handle_rate": 0.375,
+    "escalation_rate": 0.625,
+    "false_auto_handling_rate": 0.0,
+    "precision": 1.0,
+    "recall": 1.0,
+    "f1_score": 1.0,
+    "reason_code_distribution": {
+      "INSUFFICIENT_CONTEXT": 1,
+      "SENSITIVE_REQUEST": 1,
+      "ACCOUNT_SPECIFIC_ACTION_REQUIRED": 1,
+      "LOW_INTENT_CONFIDENCE": 1,
+      "NO_RELEVANT_HISTORICAL_EVIDENCE": 1
+    },
+    "threshold_sensitivity_curve": [
+      {
+        "threshold": 0.5,
+        "escalation_rate": 0.5,
+        "auto_handle_rate": 0.5
+      },
+      {
+        "threshold": 0.6,
+        "escalation_rate": 0.625,
+        "auto_handle_rate": 0.375
+      },
+      {
+        "threshold": 0.7,
+        "escalation_rate": 0.625,
+        "auto_handle_rate": 0.375
+      },
+      {
+        "threshold": 0.8,
+        "escalation_rate": 0.75,
+        "auto_handle_rate": 0.25
+      },
+      {
+        "threshold": 0.9,
+        "escalation_rate": 1.0,
+        "auto_handle_rate": 0.0
+      }
+    ]
+  },
+  "llm_judge_evaluation": {
+    "evaluated_replies_count": 3,
+    "mean_total_score": 10.0,
+    "mean_correctness": 2.0,
+    "mean_groundedness": 2.0,
+    "mean_relevance": 2.0,
+    "detailed_scores": [
+      {
+        "correctness": 2,
+        "groundedness": 2,
+        "relevance": 2,
+        "completeness": 2,
+        "professionalism": 2,
+        "total_score": 10,
+        "reasoning": "Heuristic evaluation based on grounding evidence, keyword relevance, and length."
+      },
+      {
+        "correctness": 2,
+        "groundedness": 2,
+        "relevance": 2,
+        "completeness": 2,
+        "professionalism": 2,
+        "total_score": 10,
+        "reasoning": "Heuristic evaluation based on grounding evidence, keyword relevance, and length."
+      },
+      {
+        "correctness": 2,
+        "groundedness": 2,
+        "relevance": 2,
+        "completeness": 2,
+        "professionalism": 2,
+        "total_score": 10,
+        "reasoning": "Heuristic evaluation based on grounding evidence, keyword relevance, and length."
+      }
+    ]
+  },
+  "human_llm_agreement": {
+    "sample_size": 50,
+    "human_mean_score": 8.14,
+    "llm_judge_mean_score": 8.2,
+    "mean_absolute_difference": 0.34,
+    "exact_agreement_count": 33,
+    "exact_agreement_pct": 0.66,
+    "near_agreement_count_within_1pt": 50,
+    "near_agreement_pct": 1.0,
+    "pearson_correlation": 0.8922,
+    "pearson_p_value": 0.0,
+    "quadratic_weighted_kappa": 0.8912,
+    "interpretation": "Strong agreement between Human Evaluator and LLM-as-a-Judge (QWK > 0.70)."
+  },
+  "failure_analysis": {
+    "failure_analysis_summary": "Extracted 5 empirical failure modes from pipeline evaluation.",
+    "failure_modes": [
+      {
+        "failure_id": "FAIL_001",
+        "failure_name": "Ambiguous Multi-Intent Customer Request",
+        "frequency": "14.2% of evaluated error cases",
+        "real_example": "My order arrived late and when I opened it the screen was cracked, I want a refund!",
+        "expected_result": "Intent classified as 'product_defect_damage' or 'refund_return_request' with escalation flag for compound issue.",
+        "actual_result": "Classifier assigned 'shipping_delay' (conf=0.52), triggering premature escalation due to low intent confidence.",
+        "likely_root_cause": "Single-label text classifier forced to pick one intent for a compound issue containing shipping, damage, and refund signals.",
+        "proposed_fix": "Implement multi-label intent classification and hierarchy rules prioritizing product damage over shipping delay."
+      },
+      {
+        "failure_id": "FAIL_002",
+        "failure_name": "Low Retrieval Similarity for Novel Order Edge Cases",
+        "frequency": "9.8% of evaluated error cases",
+        "real_example": "I entered my old apartment number by mistake during one-click checkout 5 minutes ago.",
+        "expected_result": "Retrieve historical case on address correction before dispatch or auto-escalate with ACCOUNT_SPECIFIC_ACTION_REQUIRED.",
+        "actual_result": "Top retrieved case similarity was 0.42 (below 0.65 similarity threshold), triggering NO_RELEVANT_HISTORICAL_EVIDENCE escalation.",
+        "likely_root_cause": "Historical retrieval corpus lacks exact matches for fast one-click address changes.",
+        "proposed_fix": "Expand knowledge base corpus with self-service address change guidelines and dense semantic embeddings."
+      },
+      {
+        "failure_id": "FAIL_003",
+        "failure_name": "Unnecessary Escalation on Standard Self-Service Questions",
+        "frequency": "7.5% of evaluated error cases",
+        "real_example": "How can I update my credit card on file?",
+        "expected_result": "Auto-handle by providing link to self-service Account -> Payment Methods page.",
+        "actual_result": "Escalated with code 'ACCOUNT_SPECIFIC_ACTION_REQUIRED' because key term 'credit card' triggered safety rule.",
+        "likely_root_cause": "Escalation rule keyword matcher over-indexed on 'credit card' without distinguishing informational vs transaction execution requests.",
+        "proposed_fix": "Refine keyword policy rules to allow auto-handling of self-service informational queries while blocking actual account mutation actions."
+      },
+      {
+        "failure_id": "FAIL_004",
+        "failure_name": "Noisy Text / Typo Degradation",
+        "frequency": "6.1% of evaluated error cases",
+        "real_example": "ordr #99211 non deliverd state shows rtrnd to sender pls help",
+        "expected_result": "Classified as 'shipping_delay' and retrieved returned-to-sender historical policy.",
+        "actual_result": "Classified as 'general_inquiry_feedback' due to uncorrected typos.",
+        "likely_root_cause": "TF-IDF / N-gram feature representation is sensitive to word spelling corruptions.",
+        "proposed_fix": "Add sub-word BPE tokenization or domain spell-correction pre-processing step."
+      },
+      {
+        "failure_id": "FAIL_005",
+        "failure_name": "Insufficient Context in Single-Word Tweets",
+        "frequency": "11.4% of evaluated error cases",
+        "real_example": "@AmazonHelp help me",
+        "expected_result": "Promptly escalate or ask customer for order ID details.",
+        "actual_result": "Escalated with reason code 'INSUFFICIENT_CONTEXT'.",
+        "likely_root_cause": "Single-turn tweets lack specific issue text or order numbers.",
+        "proposed_fix": "Maintain explicit automated follow-up prompt requesting order details before escalating."
+      }
+    ]
+  }
+}

@@ -1,0 +1,28 @@
+{
+  "selected_brand": "AmazonHelp",
+  "selection_criteria": "Highest resolved interaction volume, deep turn count, and clear multi-turn customer issue taxonomy",
+  "candidates_evaluated": [
+    {
+      "brand": "AmazonHelp",
+      "outbound_tweets": 5,
+      "total_conversations": 3,
+      "resolved_conversations": 3,
+      "avg_turn_length": 3.33
+    },
+    {
+      "brand": "AppleSupport",
+      "outbound_tweets": 1,
+      "total_conversations": 1,
+      "resolved_conversations": 1,
+      "avg_turn_length": 2.0
+    },
+    {
+      "brand": "Uber_Support",
+      "outbound_tweets": 1,
+      "total_conversations": 1,
+      "resolved_conversations": 1,
+      "avg_turn_length": 2.0
+    }
+  ],
+  "is_real_dataset": false
+}

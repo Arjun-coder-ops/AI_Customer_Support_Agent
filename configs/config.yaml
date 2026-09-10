@@ -1,0 +1,30 @@
+sampling:
+  random_seed: 42
+
+brand:
+  name: "AmazonHelp"  # Primary default brand, fallback to data profile top brand if changed
+
+data:
+  raw_path: "data/raw/twcs.csv"
+  processed_dir: "data/processed"
+  golden_dir: "data/golden"
+  max_conversations: null  # Set to integer to cap processing during debugging
+
+split:
+  train: 0.8
+  val: 0.1
+  test: 0.1
+
+retrieval:
+  top_k: 5
+  min_similarity: 0.65
+  embedding_model: "all-MiniLM-L6-v2"
+
+escalation:
+  min_intent_confidence: 0.70
+  min_retrieval_similarity: 0.65
+
+evaluation:
+  golden_size: 200
+  human_judge_size: 50
+  sample_seed: 42
