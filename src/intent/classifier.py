@@ -17,7 +17,7 @@ class FinalIntentClassifier:
     """
     def __init__(self, model_type: str = "ensemble"):
         self.model_type = model_type
-        self.vectorizer = TfidfVectorizer(max_features=10000, ngram_range=(1, 3), stop_words="english")
+        self.vectorizer = TfidfVectorizer(max_features=10000, ngram_range=(1, 3))
         self.classifier = None
         self.classes_ = []
 

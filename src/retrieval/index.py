@@ -16,7 +16,7 @@ class HistoricalCaseRetrievalIndex:
     def __init__(self, top_k: int = 5, min_similarity: float = 0.65):
         self.top_k = top_k
         self.min_similarity = min_similarity
-        self.vectorizer = TfidfVectorizer(max_features=10000, stop_words="english", ngram_range=(1, 2))
+        self.vectorizer = TfidfVectorizer(max_features=10000, ngram_range=(1, 2))
         self.nn_model = NearestNeighbors(n_neighbors=top_k, metric="cosine")
         self.cases: List[Dict[str, Any]] = []
         self.is_indexed = False
