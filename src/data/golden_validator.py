@@ -8,21 +8,16 @@ logger = logging.getLogger(__name__)
 # ---------------------------------------------------------------------------
 # ISSUE 5 — Golden Set Status
 # ---------------------------------------------------------------------------
-# The golden set is currently BLOCKED — REQUIRES HUMAN INPUT.
-# - Only 1 provisional candidate exists (is_human_reviewed: false)
-# - The Hiver assignment requires 150–250 HAND-LABELLED examples
-# - This module enforces that golden set evaluation is blocked until
-#   a sufficient number of genuinely human-reviewed examples exist.
+# The golden set human-review track is BLOCKED until annotators finish.
+# - ~200 candidates exist in labeling_candidates.jsonl
+# - is_human_reviewed remains false until a human labels them
+# - Hiver assignment requires 150–250 HAND-LABELLED examples
 #
 # Workflow:
-# 1. Run: python -m src.data.label (generates labeling_candidates.jsonl)
-# 2. Human annotator reviews candidates, filling in:
-#      "human_verified_intent": "<correct_intent_from_taxonomy>"
-#      "is_human_reviewed": true
-#      "reviewer": "<your_name>"
-#      "escalation_decision": "AUTO_HANDLE" | "ESCALATE" (if applicable)
-# 3. Promote reviewed candidates to golden_set.jsonl
-# 4. Once 150+ examples are reviewed, evaluations unlock
+# 1. python -m src.data.label
+# 2. python -m src.data.label --review
+# 3. python -m src.data.label --promote
+# 4. Once 150+ examples are reviewed, human-golden evaluation unlocks
 # ---------------------------------------------------------------------------
 
 GOLDEN_SET_PATH = "data/golden/golden_set.jsonl"

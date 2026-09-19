@@ -109,19 +109,30 @@ If you can also decide whether this message should be escalated to a human agent
 
 ## Promoting Labels to Golden Set
 
-After labelling, run:
+After labelling (via CLI or manual JSONL edits), run:
+
 ```bash
-python -m src.data.promote_golden
+python -m src.data.label --promote
+python -m src.data.label --status
 ```
 
-This script reads `labeling_candidates.jsonl`, finds all entries where
-`is_human_reviewed: true`, and merges them into `golden_set.jsonl`.
+Interactive labeling:
 
-Once you have **150+ reviewed examples**, run the full evaluation to unlock
-gold benchmark metrics:
+```bash
+python -m src.data.label --review
+```
+
+This promotes only entries where `is_human_reviewed: true` and
+`human_verified_intent` is set. Heuristic suggestions are never treated as
+human labels.
+
+Once you have **150+ reviewed examples**, run:
+
 ```bash
 python -m evaluation.run_all
 ```
+
+to unlock the separate human-golden evaluation track.
 
 ---
 
