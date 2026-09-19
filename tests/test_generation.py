@@ -13,3 +13,4 @@ def test_mock_generation():
     assert res.reply is not None
     assert res.should_escalate is False
     assert "c1" in res.evidence_ids
+    assert res.reply.startswith("[MOCK]")
