@@ -24,6 +24,17 @@ async def lifespan(app: FastAPI):
     # Load training data
     logger.info("Loading training data for pipeline...")
     train_path = "data/processed/train.jsonl"
+    zip_path = "data/processed/train.jsonl.zip"
+    
+    if not os.path.exists(train_path) and os.path.exists(zip_path):
+        logger.info(f"Extracting {zip_path}...")
+        import zipfile
+        with zipfile.ZipFile(zip_path, 'r') as zip_ref:
+            # We assume the zip contains data/processed/train.jsonl
+            # The exact name inside the zip depends on how it was zipped.
+            # Let's extract all just to be safe
+            zip_ref.extractall(".")
+
     if os.path.exists(train_path):
         train_cases = []
         with open(train_path, "r", encoding="utf-8") as f:

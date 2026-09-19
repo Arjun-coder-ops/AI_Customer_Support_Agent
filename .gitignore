@@ -51,6 +51,7 @@ Thumbs.db
 scratch/
 .pytest_cache/
 data/processed/*.jsonl
+!data/processed/train.jsonl.zip
 data/processed/*.csv
 
 # Human annotation progress (auto-generated, not committed)
