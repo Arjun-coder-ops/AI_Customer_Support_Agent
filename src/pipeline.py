@@ -108,7 +108,7 @@ class SupportAgentPipeline:
                 "evidence_cases": evidence_cases,
             },
             "escalation": escalation_eval,
-            "generated_reply": gen_response.dict(),
+            "generated_reply": gen_response.model_dump(),
         }
 
 if __name__ == "__main__":
