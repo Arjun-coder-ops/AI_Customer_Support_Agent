@@ -417,7 +417,7 @@ ender.yaml configuration in the root directory.
 2. Log into your [Vercel dashboard](https://vercel.com).
 3. Click **Add New** -> **Project**.
 4. Import your GitHub repository.
-5. The default settings (Static site) are correct. Vercel will automatically use ercel.json to proxy API requests to your Render backend.
+5. In the Vercel project settings, set:\n   - **Framework Preset**: Other (or Static)\n   - **Root Directory**: client
 6. Click **Deploy**.
 
 ### Local Development
@@ -429,7 +429,7 @@ To run the full stack locally:
    `
 3. In a new terminal, serve the frontend locally (e.g., using Python's http.server):
    `ash
-   python -m http.server 3000 --directory frontend
+   python -m http.server 3000 --directory client
    `
 4. Access the frontend at http://localhost:3000. Be sure to update API_URL in rontend/index.html to http://localhost:8000/api/chat temporarily while testing locally (do not commit this change).
 
