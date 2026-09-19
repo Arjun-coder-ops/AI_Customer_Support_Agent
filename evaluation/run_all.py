@@ -48,7 +48,7 @@ def run_all_evaluations() -> Dict[str, Any]:
     # 6. Human vs LLM Agreement Analysis (BLOCKED until human ratings exist)
     agreement_res = compute_human_llm_agreement()
 
-    # 7. Failure Analysis (hypotheses until real pipeline outputs exist)
+    # 7. Failure Analysis (real pipeline outputs when present; hypotheses separate)
     failure_res = run_failure_analysis()
 
     # Consolidate Final Master Results with explicit dataset status on every section

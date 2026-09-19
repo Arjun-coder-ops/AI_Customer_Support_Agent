@@ -1,6 +1,10 @@
 {
-  "evaluated_replies_count": 4,
-  "mean_total_score": 8.0,
+  "evaluation_type": "JUDGE_DISCRIMINATION_TEST",
+  "dataset_status": "SYNTHETIC/CONTROLLED TEST \u2014 4 hand-crafted cases spanning quality spectrum",
+  "benchmark_caveat": "This test verifies the judge's ability to discriminate between Good, Acceptable, Hallucinated, and Poor replies. The mean_total_score reflects the AVERAGE across these 4 controlled cases \u2014 it is NOT a measure of actual agent reply quality. Do NOT report this as 'Agent Reply Quality = X/10'. Actual pipeline output quality is NOT YET MEASURED.",
+  "actual_agent_quality": "NOT YET MEASURED \u2014 requires judging real pipeline outputs and human ratings",
+  "discrimination_test_case_count": 4,
+  "discrimination_test_mean_score": 8.0,
   "mean_correctness": 1.75,
   "mean_groundedness": 1.0,
   "mean_relevance": 1.75,
@@ -13,7 +17,9 @@
       "professionalism": 2,
       "total_score": 10,
       "reasoning": "Groundedness=2, Relevance=2, Completeness=2, Professionalism=2",
-      "case_type": "GOOD_REPLY"
+      "judge_mode": "MOCK_HEURISTIC",
+      "case_type": "GOOD_REPLY",
+      "expected_score_range": "9-10"
     },
     {
       "correctness": 2,
@@ -23,7 +29,9 @@
       "professionalism": 2,
       "total_score": 10,
       "reasoning": "Groundedness=2, Relevance=2, Completeness=2, Professionalism=2",
-      "case_type": "ACCEPTABLE_REPLY"
+      "judge_mode": "MOCK_HEURISTIC",
+      "case_type": "ACCEPTABLE_REPLY",
+      "expected_score_range": "7-8"
     },
     {
       "correctness": 2,
@@ -33,7 +41,9 @@
       "professionalism": 2,
       "total_score": 8,
       "reasoning": "Groundedness=0, Relevance=2, Completeness=2, Professionalism=2",
-      "case_type": "HALLUCINATED_REPLY"
+      "judge_mode": "MOCK_HEURISTIC",
+      "case_type": "HALLUCINATED_REPLY",
+      "expected_score_range": "3-5"
     },
     {
       "correctness": 1,
@@ -43,7 +53,9 @@
       "professionalism": 2,
       "total_score": 4,
       "reasoning": "Groundedness=0, Relevance=1, Completeness=0, Professionalism=2",
-      "case_type": "POOR_SHORT_REPLY"
+      "judge_mode": "MOCK_HEURISTIC",
+      "case_type": "POOR_SHORT_REPLY",
+      "expected_score_range": "0-3"
     }
   ]
 }

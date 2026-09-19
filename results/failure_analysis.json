@@ -1,55 +1,259 @@
 {
-  "failure_analysis_summary": "Extracted 5 empirical failure modes from pipeline evaluation.",
+  "failure_analysis_status": "REAL_DATA",
+  "failure_source": "REAL_PIPELINE_OUTPUTS",
+  "real_examples_collected": 5,
+  "pipeline_outputs_path": "results/pipeline_test_outputs.jsonl",
+  "pipeline_outputs_exist": true,
+  "total_cases_scanned": 8250,
+  "auto_handle_count": 557,
+  "escalate_count": 7693,
+  "reason_code_counts": {
+    "AUTO_HANDLE": 557,
+    "NO_RELEVANT_HISTORICAL_EVIDENCE": 6827,
+    "INSUFFICIENT_CONTEXT": 520,
+    "LOW_INTENT_CONFIDENCE": 215,
+    "SENSITIVE_REQUEST": 129,
+    "ACCOUNT_SPECIFIC_ACTION_REQUIRED": 2
+  },
+  "category_counts": {
+    "INTENT_MISMATCH_VS_HEURISTIC": 199,
+    "LOW_INTENT_CONFIDENCE_ESCALATION": 151,
+    "INSUFFICIENT_CONTEXT_ESCALATION": 520,
+    "SENSITIVE_REQUEST_ESCALATION": 127,
+    "ACCOUNT_SPECIFIC_ACTION_ESCALATION": 2,
+    "LOW_RETRIEVAL_SIMILARITY": 6701
+  },
+  "summary": "MEASURED categories from 8250 held-out pipeline outputs. Top 5 categories reported with real examples. Escalations are NOT automatically labelled as model failures.",
   "failure_modes": [
+    {
+      "category": "INTENT_MISMATCH_VS_HEURISTIC",
+      "case_kind": "diagnostic_disagreement",
+      "measurement_status": "measured",
+      "observed_count": 199,
+      "observed_on": "results/pipeline_test_outputs.jsonl (8250 held-out test pipeline outputs)",
+      "interpretation_note": "Classifier prediction disagrees with the heuristic keyword label. This is a diagnostic signal, NOT proof of human-labelled error.",
+      "real_example": {
+        "category": "INTENT_MISMATCH_VS_HEURISTIC",
+        "case_kind": "diagnostic_disagreement",
+        "measurement_status": "measured",
+        "source": "REAL_PIPELINE_OUTPUT",
+        "interpretation_note": "Classifier prediction disagrees with the heuristic keyword label. This is a diagnostic signal, NOT proof of human-labelled error.",
+        "customer_message": "@115850 @115821 where is my order?? Nonresponse fem seller or amazon, r u blufding with customers?? https://t.co/fxpVl8zR1r",
+        "conversation_id": "conv_778968",
+        "predicted_intent": "general_inquiry_feedback",
+        "heuristic_intent": "shipping_delay",
+        "reference_label_type": "HEURISTIC_NOT_HUMAN",
+        "confidence": 0.9689,
+        "retrieval_similarity": 0.418,
+        "escalated": true,
+        "escalation_reason": "NO_RELEVANT_HISTORICAL_EVIDENCE",
+        "generated_reply": "[MOCK] We have escalated your inquiry regarding 'general inquiry feedback' to a customer specialist for manual review. (Reason: NO_RELEVANT_HISTORICAL_EVIDENCE)",
+        "likely_root_cause": "Classifier prediction disagrees with the heuristic keyword label. This is a diagnostic signal, NOT proof of human-labelled error.",
+        "proposed_fix": "Obtain human golden labels; retrain/evaluate against human intents rather than heuristic keywords."
+      },
+      "likely_root_cause": "Classifier prediction disagrees with the heuristic keyword label. This is a diagnostic signal, NOT proof of human-labelled error.",
+      "proposed_fix": "Obtain human golden labels; retrain/evaluate against human intents rather than heuristic keywords."
+    },
+    {
+      "category": "LOW_INTENT_CONFIDENCE_ESCALATION",
+      "case_kind": "expected_safety_escalation",
+      "measurement_status": "measured",
+      "observed_count": 151,
+      "observed_on": "results/pipeline_test_outputs.jsonl (8250 held-out test pipeline outputs)",
+      "interpretation_note": "Policy correctly escalates when intent confidence is below the configured threshold. This is expected safety behaviour, not a pipeline bug.",
+      "real_example": {
+        "category": "LOW_INTENT_CONFIDENCE_ESCALATION",
+        "case_kind": "expected_safety_escalation",
+        "measurement_status": "measured",
+        "source": "REAL_PIPELINE_OUTPUT",
+        "interpretation_note": "Policy correctly escalates when intent confidence is below the configured threshold. This is expected safety behaviour, not a pipeline bug.",
+        "customer_message": "@115821 So... I got a bunch of emails stating that my reviews were posted. I didn't write any reviews. Someone went into my acct &amp; posted 5 star reviews, all but 1 were in new seller Kama Pound's storefront. Changed password, but something there is hinky.",
+        "conversation_id": "conv_2562189",
+        "predicted_intent": "account_access_issue",
+        "heuristic_intent": "account_access_issue",
+        "reference_label_type": "HEURISTIC_NOT_HUMAN",
+        "confidence": 0.6782,
+        "retrieval_similarity": 0.5951,
+        "escalated": true,
+        "escalation_reason": "LOW_INTENT_CONFIDENCE",
+        "generated_reply": "[MOCK] We have escalated your inquiry regarding 'account access issue' to a customer specialist for manual review. (Reason: LOW_INTENT_CONFIDENCE)",
+        "likely_root_cause": "Policy correctly escalates when intent confidence is below the configured threshold. This is expected safety behaviour, not a pipeline bug.",
+        "proposed_fix": "Keep threshold; optionally add a clarification turn before permanent escalation for borderline confidence."
+      },
+      "likely_root_cause": "Policy correctly escalates when intent confidence is below the configured threshold. This is expected safety behaviour, not a pipeline bug.",
+      "proposed_fix": "Keep threshold; optionally add a clarification turn before permanent escalation for borderline confidence."
+    },
+    {
+      "category": "INSUFFICIENT_CONTEXT_ESCALATION",
+      "case_kind": "expected_safety_escalation",
+      "measurement_status": "measured",
+      "observed_count": 520,
+      "observed_on": "results/pipeline_test_outputs.jsonl (8250 held-out test pipeline outputs)",
+      "interpretation_note": "Policy correctly escalates ultra-short / low-information messages. Expected safety behaviour; architectural limitation is lack of a clarification turn.",
+      "real_example": {
+        "category": "INSUFFICIENT_CONTEXT_ESCALATION",
+        "case_kind": "expected_safety_escalation",
+        "measurement_status": "measured",
+        "source": "REAL_PIPELINE_OUTPUT",
+        "interpretation_note": "Policy correctly escalates ultra-short / low-information messages. Expected safety behaviour; architectural limitation is lack of a clarification turn.",
+        "customer_message": "Amazon\u30d7\u30e9\u30a4\u30e0\u5049\u5927",
+        "conversation_id": "conv_1737960",
+        "predicted_intent": "general_inquiry_feedback",
+        "heuristic_intent": "general_inquiry_feedback",
+        "reference_label_type": "HEURISTIC_NOT_HUMAN",
+        "confidence": 0.9896,
+        "retrieval_similarity": 0.0,
+        "escalated": true,
+        "escalation_reason": "INSUFFICIENT_CONTEXT",
+        "generated_reply": "[MOCK] We have escalated your inquiry regarding 'general inquiry feedback' to a customer specialist for manual review. (Reason: INSUFFICIENT_CONTEXT)",
+        "likely_root_cause": "Policy correctly escalates ultra-short / low-information messages. Expected safety behaviour; architectural limitation is lack of a clarification turn.",
+        "proposed_fix": "Ask a safe clarification question and re-evaluate after the customer replies."
+      },
+      "likely_root_cause": "Policy correctly escalates ultra-short / low-information messages. Expected safety behaviour; architectural limitation is lack of a clarification turn.",
+      "proposed_fix": "Ask a safe clarification question and re-evaluate after the customer replies."
+    },
+    {
+      "category": "SENSITIVE_REQUEST_ESCALATION",
+      "case_kind": "expected_safety_escalation",
+      "measurement_status": "measured",
+      "observed_count": 127,
+      "observed_on": "results/pipeline_test_outputs.jsonl (8250 held-out test pipeline outputs)",
+      "interpretation_note": "Policy escalates legal/fraud/high-risk keyword matches. Expected safety behaviour.",
+      "real_example": {
+        "category": "SENSITIVE_REQUEST_ESCALATION",
+        "case_kind": "expected_safety_escalation",
+        "measurement_status": "measured",
+        "source": "REAL_PIPELINE_OUTPUT",
+        "interpretation_note": "Policy escalates legal/fraud/high-risk keyword matches. Expected safety behaviour.",
+        "customer_message": "@AmazonHelp amazon cheat me they did not refund my money they neglect my money  tottly fraud compny",
+        "conversation_id": "conv_931592",
+        "predicted_intent": "refund_return_request",
+        "heuristic_intent": "refund_return_request",
+        "reference_label_type": "HEURISTIC_NOT_HUMAN",
+        "confidence": 0.9676,
+        "retrieval_similarity": 0.5083,
+        "escalated": true,
+        "escalation_reason": "SENSITIVE_REQUEST",
+        "generated_reply": "[MOCK] We have escalated your inquiry regarding 'refund return request' to a customer specialist for manual review. (Reason: SENSITIVE_REQUEST)",
+        "likely_root_cause": "Policy escalates legal/fraud/high-risk keyword matches. Expected safety behaviour.",
+        "proposed_fix": "Retain escalation; refine keyword list with false-positive review."
+      },
+      "likely_root_cause": "Policy escalates legal/fraud/high-risk keyword matches. Expected safety behaviour.",
+      "proposed_fix": "Retain escalation; refine keyword list with false-positive review."
+    },
+    {
+      "category": "LOW_RETRIEVAL_SIMILARITY",
+      "case_kind": "architectural_limitation",
+      "measurement_status": "measured",
+      "observed_count": 6701,
+      "observed_on": "results/pipeline_test_outputs.jsonl (8250 held-out test pipeline outputs)",
+      "interpretation_note": "Top historical evidence similarity is below the escalation threshold (or reason_code=NO_RELEVANT_HISTORICAL_EVIDENCE). Architectural limitation of TF-IDF lexical retrieval \u2014 not proof the retrieved case is irrelevant to a human.",
+      "real_example": {
+        "category": "LOW_RETRIEVAL_SIMILARITY",
+        "case_kind": "architectural_limitation",
+        "measurement_status": "measured",
+        "source": "REAL_PIPELINE_OUTPUT",
+        "interpretation_note": "Top historical evidence similarity is below the escalation threshold (or reason_code=NO_RELEVANT_HISTORICAL_EVIDENCE). Architectural limitation of TF-IDF lexical retrieval \u2014 not proof the retrieved case is irrelevant to a human.",
+        "customer_message": "So beyond irritated with @AmazonHelp and @123967. Package says it was attempted delivered, but no notice left. Called USPS and wait time to talk was &gt;1 hr. Look on Amazon\u2019s site for help and am just given USPS phone number",
+        "conversation_id": "conv_2111043",
+        "predicted_intent": "general_inquiry_feedback",
+        "heuristic_intent": "general_inquiry_feedback",
+        "reference_label_type": "HEURISTIC_NOT_HUMAN",
+        "confidence": 0.9799,
+        "retrieval_similarity": 0.3618,
+        "escalated": true,
+        "escalation_reason": "NO_RELEVANT_HISTORICAL_EVIDENCE",
+        "generated_reply": "[MOCK] We have escalated your inquiry regarding 'general inquiry feedback' to a customer specialist for manual review. (Reason: NO_RELEVANT_HISTORICAL_EVIDENCE)",
+        "likely_root_cause": "Top historical evidence similarity is below the escalation threshold (or reason_code=NO_RELEVANT_HISTORICAL_EVIDENCE). Architectural limitation of TF-IDF lexical retrieval \u2014 not proof the retrieved case is irrelevant to a human.",
+        "proposed_fix": "Augment TF-IDF with dense embeddings / cross-encoder re-ranking."
+      },
+      "likely_root_cause": "Top historical evidence similarity is below the escalation threshold (or reason_code=NO_RELEVANT_HISTORICAL_EVIDENCE). Architectural limitation of TF-IDF lexical retrieval \u2014 not proof the retrieved case is irrelevant to a human.",
+      "proposed_fix": "Augment TF-IDF with dense embeddings / cross-encoder re-ranking."
+    }
+  ],
+  "hypotheses": [
     {
       "failure_id": "FAIL_001",
       "failure_name": "Ambiguous Multi-Intent Customer Request",
-      "frequency": "14.2% of evaluated error cases",
-      "real_example": "My order arrived late and when I opened it the screen was cracked, I want a refund!",
-      "expected_result": "Intent classified as 'product_defect_damage' or 'refund_return_request' with escalation flag for compound issue.",
-      "actual_result": "Classifier assigned 'shipping_delay' (conf=0.52), triggering premature escalation due to low intent confidence.",
-      "likely_root_cause": "Single-label text classifier forced to pick one intent for a compound issue containing shipping, damage, and refund signals.",
-      "proposed_fix": "Implement multi-label intent classification and hierarchy rules prioritizing product damage over shipping delay."
+      "source": "ILLUSTRATIVE_HYPOTHESIS \u2014 not measured from real evaluation run",
+      "measurement_status": "hypothesis",
+      "frequency": "NOT MEASURED \u2014 requires human-labelled multi-intent analysis",
+      "illustrative_example": {
+        "customer_message": "My order arrived late and when I opened it the screen was cracked, I want a refund!",
+        "predicted_intent": "shipping_delay (illustrative \u2014 may differ in real run)",
+        "confidence": "ILLUSTRATIVE \u2014 not measured",
+        "note": "This example is illustrative of the failure mode, not a measured pipeline output."
+      },
+      "architectural_root_cause": "The single-label text classifier must choose one intent for queries containing multiple issues such as shipping delay, product damage, and refund requests.",
+      "hypothesis": "Compound customer requests may be difficult for a single-label intent classifier and can lead to incorrect evidence retrieval or escalation decisions.",
+      "proposed_fix": "Implement multi-label intent classification and priority rules for compound requests."
     },
     {
       "failure_id": "FAIL_002",
-      "failure_name": "Low Retrieval Similarity for Novel Order Edge Cases",
-      "frequency": "9.8% of evaluated error cases",
-      "real_example": "I entered my old apartment number by mistake during one-click checkout 5 minutes ago.",
-      "expected_result": "Retrieve historical case on address correction before dispatch or auto-escalate with ACCOUNT_SPECIFIC_ACTION_REQUIRED.",
-      "actual_result": "Top retrieved case similarity was 0.42 (below 0.65 similarity threshold), triggering NO_RELEVANT_HISTORICAL_EVIDENCE escalation.",
-      "likely_root_cause": "Historical retrieval corpus lacks exact matches for fast one-click address changes.",
-      "proposed_fix": "Expand knowledge base corpus with self-service address change guidelines and dense semantic embeddings."
+      "failure_name": "Low Retrieval Similarity for Novel Edge Cases",
+      "source": "ILLUSTRATIVE_HYPOTHESIS \u2014 see also measured LOW_RETRIEVAL_SIMILARITY category",
+      "measurement_status": "hypothesis",
+      "frequency": "NOT MEASURED as a distinct novel-phrasing subset",
+      "illustrative_example": {
+        "customer_message": "I entered my old apartment number by mistake during one-click checkout 5 minutes ago.",
+        "retrieval_similarity": "ILLUSTRATIVE \u2014 expected to be lower for lexically novel phrasing",
+        "note": "This example illustrates how TF-IDF retrieval can struggle with novel wording. Measured low-similarity escalations appear separately under LOW_RETRIEVAL_SIMILARITY."
+      },
+      "architectural_root_cause": "TF-IDF cosine similarity is sensitive to vocabulary overlap.",
+      "hypothesis": "Novel phrasing may produce weak historical evidence even when a semantically similar historical case exists.",
+      "proposed_fix": "Replace or augment TF-IDF retrieval with dense semantic embeddings such as sentence-transformers."
     },
     {
       "failure_id": "FAIL_003",
-      "failure_name": "Unnecessary Escalation on Standard Self-Service Questions",
-      "frequency": "7.5% of evaluated error cases",
-      "real_example": "How can I update my credit card on file?",
-      "expected_result": "Auto-handle by providing link to self-service Account -> Payment Methods page.",
-      "actual_result": "Escalated with code 'ACCOUNT_SPECIFIC_ACTION_REQUIRED' because key term 'credit card' triggered safety rule.",
-      "likely_root_cause": "Escalation rule keyword matcher over-indexed on 'credit card' without distinguishing informational vs transaction execution requests.",
-      "proposed_fix": "Refine keyword policy rules to allow auto-handling of self-service informational queries while blocking actual account mutation actions."
+      "failure_name": "Unnecessary Escalation on Self-Service Informational Queries",
+      "source": "ILLUSTRATIVE_HYPOTHESIS \u2014 not measured from real evaluation run",
+      "measurement_status": "hypothesis",
+      "frequency": "NOT MEASURED \u2014 requires human policy review",
+      "illustrative_example": {
+        "customer_message": "How can I update my credit card on file?",
+        "escalation_reason": "ACCOUNT_SPECIFIC_ACTION_REQUIRED (illustrative)",
+        "note": "The current keyword policy may treat an informational question similarly to an account mutation request."
+      },
+      "architectural_root_cause": "ACCOUNT_SPECIFIC_ACTION_REQUIRED uses keyword matching without fully distinguishing informational questions from mutations.",
+      "hypothesis": "Keyword-based account-action rules may over-trigger on some informational customer questions.",
+      "proposed_fix": "Distinguish informational account queries from account mutation requests using a dedicated intent or policy layer."
     },
     {
       "failure_id": "FAIL_004",
       "failure_name": "Noisy Text / Typo Degradation",
-      "frequency": "6.1% of evaluated error cases",
-      "real_example": "ordr #99211 non deliverd state shows rtrnd to sender pls help",
-      "expected_result": "Classified as 'shipping_delay' and retrieved returned-to-sender historical policy.",
-      "actual_result": "Classified as 'general_inquiry_feedback' due to uncorrected typos.",
-      "likely_root_cause": "TF-IDF / N-gram feature representation is sensitive to word spelling corruptions.",
-      "proposed_fix": "Add sub-word BPE tokenization or domain spell-correction pre-processing step."
+      "source": "ILLUSTRATIVE_HYPOTHESIS \u2014 observed during raw dataset inspection",
+      "measurement_status": "hypothesis",
+      "frequency": "NOT MEASURED \u2014 requires dedicated noisy-text evaluation",
+      "illustrative_example": {
+        "customer_message": "ordr #99211 non deliverd state shows rtrnd to sender pls help",
+        "predicted_intent": "general_inquiry_feedback (illustrative \u2014 actual pipeline output may differ)",
+        "note": "This example is illustrative of noisy Twitter-style text."
+      },
+      "architectural_root_cause": "Twitter abbreviations and spelling errors reduce TF-IDF overlap.",
+      "hypothesis": "Noisy customer messages may reduce intent classification and retrieval quality.",
+      "proposed_fix": "Add domain-specific normalization, spelling correction, or subword/embedding-based representations."
     },
     {
       "failure_id": "FAIL_005",
-      "failure_name": "Insufficient Context in Single-Word Tweets",
-      "frequency": "11.4% of evaluated error cases",
-      "real_example": "@AmazonHelp help me",
-      "expected_result": "Promptly escalate or ask customer for order ID details.",
-      "actual_result": "Escalated with reason code 'INSUFFICIENT_CONTEXT'.",
-      "likely_root_cause": "Single-turn tweets lack specific issue text or order numbers.",
-      "proposed_fix": "Maintain explicit automated follow-up prompt requesting order details before escalating."
+      "failure_name": "Insufficient Context Without Clarification Turn",
+      "source": "ILLUSTRATIVE_HYPOTHESIS \u2014 see also measured INSUFFICIENT_CONTEXT_ESCALATION",
+      "measurement_status": "hypothesis",
+      "frequency": "NOT MEASURED as a clarification-turn experiment",
+      "illustrative_example": {
+        "customer_message": "@AmazonHelp help me",
+        "escalation_reason": "INSUFFICIENT_CONTEXT",
+        "note": "The current policy intentionally escalates messages that do not contain enough information for safe automation."
+      },
+      "architectural_root_cause": "No automatic clarification turn exists before escalation.",
+      "hypothesis": "A safe clarification question could convert some insufficient-context escalations into auto-handleable cases.",
+      "proposed_fix": "Implement multi-turn context accumulation with a clarification question before permanent escalation."
     }
-  ]
+  ],
+  "measurement_notes": {
+    "intent_reference": "HEURISTIC_NOT_HUMAN \u2014 intent mismatches are not proof of human-labelled classification errors.",
+    "escalation_vs_failure": "Expected safety escalations (LOW_INTENT_CONFIDENCE, INSUFFICIENT_CONTEXT, SENSITIVE_REQUEST, ACCOUNT_SPECIFIC_ACTION) are policy behaviour, not automatically model failures.",
+    "prioritization": "Escalation reason codes take priority over raw similarity so LOW_INTENT_CONFIDENCE / INSUFFICIENT_CONTEXT are not mislabelled as LOW_RETRIEVAL_SIMILARITY.",
+    "retrieval_metric": "LOW_RETRIEVAL_SIMILARITY is threshold-/reason-based; it does not prove human irrelevance.",
+    "frequencies": "observed_count values are measured on results/pipeline_test_outputs.jsonl only. Hypothesis frequencies are NOT invented."
+  }
 }

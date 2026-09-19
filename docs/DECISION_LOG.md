@@ -1,242 +1,136 @@
 # Engineering Decision Log
 
-This document records key architectural, data engineering, model, and product decisions made during the development of the autonomous support agent.
+Decisions actually represented by the current implementation/process. 15 items.
 
 ---
 
-## 1. Brand Selection Criteria
+## 1. Why AmazonHelp
 
-### Decision
-Select **AmazonHelp** as the primary default target brand based on programmatic data profiling (highest inbound turn volume, deep multi-turn interactions, and diverse e-commerce support queries).
-
-### Alternatives
-- **AppleSupport**: High volume, but heavily skewed towards OS update troubleshooting which requires hardware state knowledge.
-- **Delta/AmericanAir**: High volume, but mostly flight cancellation panic messages with minimal public resolution details due to PII privacy.
-- **UberSupport**: Shorter 1-turn interactions ("check app for refund").
-
-### Why chosen
-AmazonHelp provides the richest multi-turn customer problem descriptions (shipping delays, returns, digital orders, account access, missing items) and explicit support rep responses suitable for retrieval and intent taxonomy construction.
-
-### Tradeoff
-Higher text variance and volume requires aggressive caching and batch embedding to stay within execution limits.
-
-### Evidence
-Data profile statistics computed on Twitter Customer Support dataset.
+**Decision:** Focus on AmazonHelp.  
+**Why:** Highest usable multi-turn volume and e-commerce intent diversity in the Twitter support corpus.  
+**Evidence:** `results/brand_selection.json`, `results/dataset_profile.json`.
 
 ---
 
-## 2. Conversation Graph Reconstruction vs naive Thread Chunking
+## 2. Conversation-graph reconstruction
 
-### Decision
-Reconstruct exact directed acyclic graphs (DAGs) of conversation threads using `tweet_id`, `in_response_to_tweet_id`, and `response_tweet_id` with graph traversal and cycle detection.
-
-### Alternatives
-- Grouping by `author_id` and time windows.
-- Pairwise prompt-response mapping without conversation history.
-
-### Why chosen
-Customer support issues cannot be accurately classified or resolved without preceding turn context. Graph traversal identifies true conversation roots and complete histories.
-
-### Tradeoff
-Graph traversal is computationally heavier ($O(N)$ with hash maps) and must explicitly handle missing parent tweets and cyclical pointer corruptions.
-
-### Evidence
-Tested on graph cycles and orphan nodes in `tests/test_conversations.py`.
+**Decision:** Rebuild threads via tweet reply pointers with cycle handling.  
+**Why:** Intent and resolution context require full conversation roots, not isolated tweets.  
+**Evidence:** `src/data/conversations.py`, `tests/test_conversations.py`.
 
 ---
 
-## 3. Conversation-Level Partitioning for Zero-Leakage Splitting
+## 3. Conversation-level train/val/test split
 
-### Decision
-Partition datasets strictly at the **conversation ID** level into Train (80%), Validation (10%), and Test (10%), and verify zero overlap of conversation IDs and exact message texts across splits.
-
-### Alternatives
-- Random tweet-level train/test split.
-- Stratified sampling on individual turn level.
-
-### Why chosen
-Turn-level random splitting causes severe data leakage: customer tweets from train appear alongside rep responses in test, inflating retrieval and intent metrics.
-
-### Tradeoff
-Slightly harder to guarantee exact per-intent class proportions across splits.
-
-### Evidence
-Leakage validation script `evaluation/leakage_check.py` fails if overlap $> 0$.
+**Decision:** 80/10/10 split by conversation ID (seed 42).  
+**Why:** Tweet-level splits leak customer text across train and test and inflate retrieval.  
+**Evidence:** `evaluation/leakage_check.py` → 0 conversation-ID overlap.
 
 ---
 
-## 4. Multi-Signal Escalation Engine over Single Threshold Score
+## 4. Heuristic taxonomy bootstrap
 
-### Decision
-Implement a multi-signal risk engine combining intent confidence, retrieval similarity, sensitive key terms, and context completeness instead of a single classification confidence threshold.
-
-### Alternatives
-- Fixed confidence threshold (e.g. `confidence < 0.7 => ESCALATE`).
-- LLM-only escalation prompt.
-
-### Why chosen
-High intent confidence (e.g. 0.95 for "Refund Request") does NOT mean the agent should auto-handle if no relevant historical evidence exists or if the customer demands legal action.
-
-### Tradeoff
-Requires tuning multiple parameters (`min_intent_confidence`, `min_retrieval_similarity`) and managing 5 explicit reason codes.
-
-### Evidence
-Evaluated on high-risk and out-of-distribution cases in `evaluation/escalation_eval.py`.
+**Decision:** Bootstrap 8 intents + keyword provisional labels for training.  
+**Why:** No human labels existed at build time; taxonomy is still data-derived and documented.  
+**Tradeoff:** Heuristic eval accuracy is circular until human golden labels exist.  
+**Evidence:** `data/golden/taxonomy.yaml`, `evaluation/intent_eval.py`.
 
 ---
 
-## 5. Structured Output Validation via Pydantic Schemas
+## 5. Train-only retrieval corpus
 
-### Decision
-Enforce JSON schemas using Pydantic validation for all LLM generated replies, returning explicit fallback objects if parsing fails.
-
-### Alternatives
-- Unstructured free-text generation.
-- Regex parsing of free text.
-
-### Why chosen
-Ensures generated replies explicitly attach metadata (`reply`, `confidence`, `evidence_ids`, `should_escalate`, `escalation_reason`) that can be validated downstream.
-
-### Tradeoff
-Slightly higher prompt token overhead to specify JSON format rules.
-
-### Evidence
-Schema tests in `tests/test_generation.py`.
+**Decision:** Index only `train.jsonl` resolved cases.  
+**Why:** Prevents test responses from becoming retrieval evidence (leakage).  
+**Evidence:** `evaluation/retrieval_eval.py`, `evaluation/pipeline_eval.py` leakage asserts.
 
 ---
 
-## 6. Lightweight FAISS Vector Retrieval over External Vector DB
+## 6. TF-IDF retrieval (not dense embeddings by default)
 
-### Decision
-Use `faiss-cpu` / `scikit-learn` NearestNeighbors for vector search over pre-computed embeddings saved locally.
-
-### Alternatives
-- External Vector Databases (Pinecone, Qdrant, ChromaDB).
-- Keyword search (BM25 / TF-IDF only).
-
-### Why chosen
-Keeps the repository self-contained, reproducible in under 15 minutes, and avoids external service dependencies or complex container orchestration.
-
-### Tradeoff
-Index must be saved/loaded as a local binary file (`.faiss` or `.pkl`).
-
-### Evidence
-Retrieval latency $< 10$ ms for top-5 candidates.
+**Decision:** TF-IDF + cosine nearest neighbors for the submission path.  
+**Why:** Fast, dependency-light, reproducible offline; dense models remain a one-week upgrade.  
+**Evidence:** `src/retrieval/index.py`.
 
 ---
 
-## 7. Strict Anti-Fabrication Data Policy
+## 7. Confidence threshold 0.70
 
-### Decision
-Strictly enforce `NOT YET MEASURED` and `BLOCKED — REQUIRES HUMAN INPUT` when raw dataset files or human labels are unavailable, rather than reporting synthetic numbers as real.
-
-### Alternatives
-- Hardcoding plausible benchmark numbers in README/report.
-- Generating artificial dataset statistics.
-
-### Why chosen
-Integrity and honesty are mandatory for interview evaluation; fake numbers undermine technical credibility.
-
-### Tradeoff
-Documentation will explicitly reflect missing raw data until `twcs.csv` is provided.
-
-### Evidence
-Verified against Anti-Fabrication Rule 1.
+**Decision:** Escalate when intent confidence < 0.70.  
+**Why:** Prefer false escalations over confident wrong auto-handles.  
+**Not tuned** to maximize auto-handle rate.  
+**Evidence:** `configs/config.yaml`, `src/escalation/policy.py`.
 
 ---
 
-## 8. Dual LLM & Mock Execution Framework
+## 8. Retrieval similarity threshold 0.65
 
-### Decision
-Provide a fallback `MockGenerator` and `MockJudge` that simulate realistic responses and evaluation metrics when API keys are absent or `MOCK_LLM=true`.
-
-### Alternatives
-- Crash or fail immediately if no API key is found.
-
-### Why chosen
-Allows full automated test suites (`pytest`) and pipeline validation to run in CI/CD without incurring LLM API costs or requiring secret keys.
-
-### Tradeoff
-Mock outputs evaluate structural validity and pipeline correctness, but real semantic quality requires an active API key.
-
-### Evidence
-`tests/test_pipeline.py` passes under mock mode.
+**Decision:** Escalate when top evidence similarity < 0.65 (`NO_RELEVANT_HISTORICAL_EVIDENCE`).  
+**Why:** Weak historical grounding should not produce assertive auto-replies.  
+**Evidence:** escalation policy + curated suite eval.
 
 ---
 
-## 9. Taxonomy Construction Grounded in Real Case Clusters
+## 9. Escalation-first multi-signal policy
 
-### Decision
-Define an 8-intent taxonomy based on real customer problem clusters (`shipping_delay`, `missing_item`, `order_cancellation`, `refund_return_request`, `account_access_issue`, `payment_billing_issue`, `product_defect_damage`, `general_inquiry_feedback`).
-
-### Alternatives
-- Generic 3-intent taxonomy (Inquiry, Complaint, Feedback).
-- Overly fine-grained 30-intent taxonomy.
-
-### Why chosen
-8 intents provide sufficient granular classification for action routing while maintaining clear decision boundaries and sufficient support per class.
-
-### Tradeoff
-Requires clear boundary rules and exclusion criteria documented in `data/golden/taxonomy.yaml`.
-
-### Evidence
-Taxonomy definitions in `data/golden/taxonomy.yaml`.
+**Decision:** Ordered checks: context → sensitive → account action → confidence → retrieval → auto-handle.  
+**Why:** High intent confidence alone is insufficient for legal/account/low-evidence cases.  
+**Evidence:** `src/escalation/policy.py`, `tests/test_escalation.py`.
 
 ---
 
-## 10. Multi-Dimensional LLM-as-a-Judge Evaluation
+## 10. Gemini structured generation + MOCK_LLM
 
-### Decision
-Evaluate generated responses across 5 distinct dimensions (Correctness, Groundedness, Relevance, Completeness, Professionalism) on a 0-2 scale, producing a 0-10 aggregate score.
-
-### Alternatives
-- Binary Pass/Fail rating.
-- ROUGE/BLEU string overlap against historical text.
-
-### Why chosen
-ROUGE/BLEU penalizes valid paraphrases and customer support re-wordings. Multi-criteria rubric assesses hallucination (groundedness) separately from tone.
-
-### Tradeoff
-Requires structured JSON parsing of judge evaluations and comparison against human ratings.
-
-### Evidence
-Judge evaluation schema in `evaluation/llm_judge.py`.
+**Decision:** Real LLM = Gemini only; offline path = deterministic mock.  
+**Why:** Assignment needs real generation, but CI/reviewers must run without secrets. OpenAI removed as unnecessary.  
+**Evidence:** `src/generation/generator.py`, `.env.example`.
 
 ---
 
-## 11. Human vs LLM Agreement Quantification
+## 11. Human evaluation design (blocked until real labels)
 
-### Decision
-Compute Cohen's Quadratic Weighted Kappa, Pearson correlation, and Mean Absolute Difference between human ratings and LLM judge ratings on a 50-item sample.
-
-### Alternatives
-- Simple percent exact agreement.
-
-### Why chosen
-Percent agreement ignores distance between ratings (e.g. 8/10 vs 7/10 is close, 8/10 vs 2/10 is far). Weighted Kappa accounts for ordinal distance.
-
-### Tradeoff
-Requires a non-zero human evaluation set to compute statistical agreement metrics.
-
-### Evidence
-Implemented in `evaluation/human_judge_agreement.py`.
+**Decision:** Candidates + CLI labeling; refuse to treat heuristic seeds as human; agreement requires `human_ratings.json`.  
+**Why:** Anti-fabrication — do not invent golden labels or agreement stats.  
+**Evidence:** `src/data/label.py`, `evaluation/human_judge_agreement.py`.
 
 ---
 
-## 12. Modular CLI & Pytest Pipeline Architecture
+## 12. Explicit leakage controls in eval
 
-### Decision
-Expose clean Python CLI modules (`python -m src.data.prepare`, `python -m evaluation.run_all`) backed by unit tests (`pytest`).
+**Decision:** Automated leakage check + pipeline_eval pre/post index overlap asserts.  
+**Why:** Prior bug indexed all conversations including test; must not recur.  
+**Evidence:** `evaluation/leakage_check.py`, `evaluation/pipeline_eval.py`.
 
-### Alternatives
-- Single monolith script.
-- Complex orchestration tools (Airflow, Prefect).
+---
 
-### Why chosen
-Simple, reproducible execution for technical reviewers without framework overhead.
+## 13. No production infrastructure
 
-### Tradeoff
-Requires careful package structure and relative imports in `src/` and `evaluation/`.
+**Decision:** No Docker/UI/queues/cloud deploy in this submission.  
+**Why:** Scope is a reproducible, interview-modifiable research prototype.  
+**Evidence:** repository layout / README scope statement.
 
-### Evidence
-All modules runnable via standard Python module syntax.
+---
+
+## 14. IntentMatch@K naming (not Recall@K)
+
+**Decision:** Report IntentMatch@K as a proxy topical metric.
+**Why:** Dataset has no gold relevant-document IDs; calling it Recall would overclaim.
+**Evidence:** `evaluation/retrieval_eval.py`, README metric notes.
+
+---
+
+## 15. Distinguishing conversation-level leakage from duplicate-text contamination
+
+**Decision:** The leakage checker reports two separate verdicts: (a) `conversation_id_leakage` (critical — grounds the `has_leakage` flag), and (b) `duplicate_text_contamination_risk` (informational — when identical message strings appear across independent conversations).
+
+**Why this is non-obvious:** A naive leakage check that unions all duplicate evidence — ID overlap OR text overlap — would incorrectly fail on trivially generic tweets like "@amazonhelp ok" or "te amo". These strings occur in multiple independent conversations by chance (different conversation_ids, different timestamps, different resolutions). Treating them as leakage would produce a false FAIL verdict, obscure genuinely important ID-level leakage, and potentially lead to incorrectly discarding those conversations from evaluation.
+
+**Alternatives considered:**
+- Fail on ANY text overlap → false positive on generic messages; not useful.
+- Ignore text overlap entirely → misses real contamination if short generic messages have disproportionate class representation in training.
+
+**Why chosen:** Keep the critical conversation-ID check as the primary verdict. Separately surface duplicate-text overlap as an informational diagnostic, including a recommendation to filter messages shorter than 5 tokens for intent evaluation.
+
+**Tradeoff:** Requires human to interpret the contamination risk note; it is not automatically resolved.
+
+**Evidence:** `evaluation/leakage_check.py`, `tests/test_leakage.py` (test_leakage_check_duplicate_text_independent_conversations).
+

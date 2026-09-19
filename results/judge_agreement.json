@@ -1,9 +1,6 @@
 {
-  "status": "BLOCKED \u2014 REQUIRES HUMAN INPUT",
+  "status": "BLOCKED \u2014 INVALID HUMAN RATING FILE",
   "is_human_evaluated": false,
-  "message": "Human rating file 'data/golden/human_ratings.json' is missing. Human evaluation dataset must be provided by a human reviewer.",
-  "human_mean_score": "NOT YET MEASURED",
-  "llm_judge_mean_score": "NOT YET MEASURED",
-  "pearson_correlation": "NOT YET MEASURED",
-  "quadratic_weighted_kappa": "NOT YET MEASURED"
+  "message": "Human and LLM rating lists must be non-empty and equal in length. Prefer the examples[] schema so both raters score the SAME reply.",
+  "how_to_create": "HOW TO CREATE data/golden/human_ratings.json\n===========================================\n\n1. Select the SAME examples the judge will score.\n   Preferred source: data/golden/judge_agreement_examples.jsonl\n   (create with: python -m evaluation.human_judge_agreement --prepare-examples)\n\n   Each example must include:\n     - example_id\n     - customer_message\n     - generated_reply\n     - predicted_intent\n     - retrieved_evidence\n\n2. Rate each generated_reply on the same 0\u201310 total scale used by the LLM judge\n   (Correctness + Groundedness + Relevance + Completeness + Professionalism).\n\n3. Write data/golden/human_ratings.json with this schema:\n\n{\n  \"rated_by\": \"YOUR_NAME\",\n  \"rating_date\": \"YYYY-MM-DD\",\n  \"rubric\": \"0-10 total across correctness/groundedness/relevance/completeness/professionalism\",\n  \"examples\": [\n    {\n      \"example_id\": \"agr_001\",\n      \"customer_message\": \"...\",\n      \"generated_reply\": \"...\",\n      \"human_total_score\": 7,\n      \"llm_total_score\": null\n    }\n  ]\n}\n\nNotes:\n- llm_total_score may be null; the agreement script will fill it by\n  running the judge on the SAME generated_reply text.\n- Do NOT invent ratings.\n- Until this file exists with real human scores, agreement remains BLOCKED."
 }

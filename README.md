@@ -1,237 +1,394 @@
-# Autonomous AI Customer Support Agent (`hiver-support-agent`)
+# Autonomous AI Customer Support Agent
 
-> End-to-End Autonomous AI Customer Support System built on Twitter Customer Support interactions, featuring Intent Classification, Zero-Leakage Vector Retrieval, Grounded Generation, and Multi-Signal Escalation.
+End-to-end AmazonHelp support agent for the **Hiver SDE Intern** take-home:
+intent classification → train-only historical retrieval → grounded reply drafting → AUTO_HANDLE / ESCALATE with explicit reason codes.
+
+**Honesty contract:** every metric below states its data source. Heuristic agreement is not human accuracy. Curated safety-suite metrics are not production benchmarks.
 
 ---
 
-## Architecture
+## A. Project overview
+
+This repository turns the public *Customer Support on Twitter* dataset into a reproducible support agent focused on **AmazonHelp**.
+
+It is designed to be:
+- runnable from this README
+- leakage-safe (conversation-level splits; train-only retrieval)
+- interview-explainable (small modules, explicit policy)
+- honest about what has and has not been human-evaluated
+
+---
+
+## B. Problem framing
+
+False auto-handling (sending a wrong/hallucinated reply) is more costly than over-escalation. The system therefore uses an **escalation-first** safety policy and only auto-handles when intent confidence, retrieval evidence, and risk checks all pass.
+
+---
+
+## C. Architecture
 
 ```text
-Incoming Customer Query
-           │
-           ▼
-[ Preprocessing & Cleaning ]
-           │
-           ▼
-[ Intent Classifier (TF-IDF + Calibrated Logistic Regression) ]
-    ├── Predicted Intent
-    └── Confidence Score
-           │
-           ▼
-[ Historical Vector Retrieval Index (TF-IDF NearestNeighbors) ]
-    └── Top-K Historical Cases + Similarity Score (TRAIN SPLIT ONLY)
-           │
-           ▼
-[ Multi-Signal Escalation Policy Engine ]
-    ├── Intent Confidence < 0.70  -> ESCALATE (LOW_INTENT_CONFIDENCE)
-    ├── Retrieval Sim < 0.65       -> ESCALATE (NO_RELEVANT_HISTORICAL_EVIDENCE)
-    ├── Sensitive Key Terms        -> ESCALATE (SENSITIVE_REQUEST)
-    ├── Account Action Request     -> ESCALATE (ACCOUNT_SPECIFIC_ACTION_REQUIRED)
-    └── Insufficient Context       -> ESCALATE (INSUFFICIENT_CONTEXT)
-           │
-     ──────┴──────
-    │             │
-    ▼             ▼
-[ ESCALATE ]   [ AUTO_HANDLE ]
-                 │
-                 ▼
-     [ Grounded Reply Generator ]
-       (Pydantic Output Schema)
+Incoming customer message
+        │
+        ▼
+Preprocess / clean
+        │
+        ▼
+Intent classifier (TF-IDF + calibrated logistic regression)
+  → intent name + confidence
+        │
+        ▼
+Historical retrieval (TF-IDF nearest neighbors, TRAIN split only)
+  → top-k evidence cases + similarity
+        │
+        ▼
+Escalation policy (ordered safety checks)
+  → AUTO_HANDLE or ESCALATE + reason_code
+        │
+        ▼
+Grounded reply generator (Gemini, or MOCK_LLM)
+  → Pydantic SupportResponseSchema
 ```
 
 ---
 
-## Project Overview
+## D. Dataset and AmazonHelp selection
 
-This repository implements an autonomous customer support agent for the **Hiver SDE Intern Take-Home Build**. It transforms messy, multi-turn Twitter customer support data into an end-to-end support system that:
-- **Classifies customer intent** into an 8-intent domain taxonomy.
-- **Retrieves relevant historical resolved cases** via vector similarity using a **training-only** retrieval corpus (no test data leakage).
-- **Generates grounded responses** adhering to Pydantic JSON schemas.
-- **Safely escalates high-risk queries** with explicit reason codes.
-- **Evaluates performance** via automated split leakage audits, baselines, LLM-as-a-Judge discrimination tests, and human evaluation (currently blocked pending annotation).
+| Item | Value | Source |
+|------|-------|--------|
+| Dataset | Customer Support on Twitter (`twcs.csv`) | Kaggle `thoughtvector/customer-support-on-twitter` |
+| Total tweets | 2,811,774 | `results/dataset_profile.json` |
+| Selected brand | AmazonHelp | programmatic volume / depth / diversity |
+| AmazonHelp conversations | 82,493 | processed splits |
+| Train / Val / Test | 65,994 / 8,249 / 8,250 | conversation-level 80/10/10, seed=42 |
 
----
+Place the raw file at:
 
-## Dataset & Selected Brand
+```text
+data/raw/twcs.csv
+```
 
-- **Primary Dataset**: Kaggle *Customer Support on Twitter* (`thoughtvector/customer-support-on-twitter`), 2,811,774 tweets.
-- **Selected Brand**: **AmazonHelp** — selected programmatically based on interaction volume, turn depth, resolution rate, and taxonomy diversity. See `results/brand_selection.json`.
-- **AmazonHelp conversations**: 82,493 total
-- **Train**: 65,994 (80%) | **Val**: 8,249 (10%) | **Test**: 8,250 (10%)
-
----
-
-## Intent Taxonomy
-
-| Intent | Description |
-|--------|-------------|
-| `shipping_delay` | Package delayed, tracking stuck, or late delivery |
-| `missing_item` | Package delivered but item missing from box |
-| `order_cancellation` | Request to cancel order before shipment |
-| `refund_return_request` | Return item or request refund |
-| `account_access_issue` | Login, password reset, 2FA errors |
-| `payment_billing_issue` | Double charges, billing disputes, payment failure |
-| `product_defect_damage` | Item received broken, defective, or cracked |
-| `general_inquiry_feedback` | General questions, store hours, stock availability |
+(The raw CSV is gitignored; do not commit it.)
 
 ---
 
-## Setup & Environment Variables
+## E. Intent taxonomy
 
-### 1. Installation
+Eight data-derived support intents (`data/golden/taxonomy.yaml`):
+
+| Intent | Meaning |
+|--------|---------|
+| `shipping_delay` | Late / stuck tracking |
+| `missing_item` | Delivered box incomplete |
+| `order_cancellation` | Cancel before/during fulfillment |
+| `refund_return_request` | Return / refund |
+| `account_access_issue` | Login / password / lockout |
+| `payment_billing_issue` | Double charge / billing error |
+| `product_defect_damage` | Broken / defective item |
+| `general_inquiry_feedback` | Other / unclear |
+
+**Training labels today are heuristic keyword labels**, not human gold.
+
+---
+
+## F. Data splitting / leakage prevention
+
+- Splits are at **conversation ID** level (never tweet-level random mix).
+- Retrieval index is built from **train only**.
+- Golden candidates are sampled from **test/val only**.
+- Automated check: `evaluation/leakage_check.py` (also run via `evaluation.run_all`).
+- Current result: **0 train/test conversation ID overlap**.
+
+---
+
+## G. Retrieval methodology
+
+- Vectorizer: TF-IDF (1–2 grams)
+- Index: sklearn `NearestNeighbors` (cosine)
+- Corpus: `data/processed/train.jsonl` only (~65,994 cases)
+- Queries for retrieval eval: held-out `test.jsonl` (8,250)
+
+**Proxy metrics (not IR Recall@K):**
+- `IntentMatch@1` / `IntentMatch@5`: whether a retrieved neighbor shares the query’s **heuristic** intent
+- These are topical-grouping diagnostics, **not** true recall (no gold relevant-doc IDs exist)
+
+---
+
+## H. Escalation policy
+
+Ordered checks in `src/escalation/policy.py`:
+
+1. `INSUFFICIENT_CONTEXT`
+2. `SENSITIVE_REQUEST`
+3. `ACCOUNT_SPECIFIC_ACTION_REQUIRED`
+4. `LOW_INTENT_CONFIDENCE` (default threshold 0.70)
+5. `NO_RELEVANT_HISTORICAL_EVIDENCE` (default similarity threshold 0.65)
+6. else `AUTO_HANDLE`
+
+Thresholds are safety defaults — **not** tuned to inflate auto-handle rate.
+
+---
+
+## I. Gemini generation
+
+Real LLM path uses **Google Gemini** (`google-generativeai`) with structured JSON matching `SupportResponseSchema`.
+
+Rules enforced in prompts:
+- ground on retrieved historical cases
+- do not invent order/account details
+- do not claim actions unless supported
+- respect pre-decided escalation
+
+---
+
+## J. Mock mode
+
+```env
+MOCK_LLM=true
+```
+
+Uses a deterministic mock generator/judge for offline tests and evaluation without API keys. Mock replies are prefixed with `[MOCK]`.
+
+```env
+MOCK_LLM=false
+GEMINI_API_KEY=...
+```
+
+Uses Gemini for generation/judging.
+
+---
+
+## K. Installation
+
 ```bash
 git clone <repo-url>
-cd hiver-support-agent
+cd AI_Customer_Support_Agent
+python -m venv .venv
+# Windows: .venv\Scripts\activate
+# macOS/Linux: source .venv/bin/activate
 pip install -r requirements.txt
 ```
 
-### 2. Environment Variables (`.env`)
-Copy `.env.example` to `.env`:
+---
+
+## L. Environment configuration
+
+Copy the safe example:
+
 ```bash
 cp .env.example .env
 ```
-Key variables:
+
+`.env.example` contains placeholders only:
+
 ```env
 GEMINI_API_KEY=your_gemini_api_key_here
-OPENAI_API_KEY=your_openai_api_key_here
-MOCK_LLM=false  # Set to true to run offline without API keys
+MOCK_LLM=true
 ```
+
+`.env` is gitignored. Never commit real keys. OpenAI is **not** used.
 
 ---
 
-## Data Preparation & Execution Commands
+## M. Exact commands to reproduce results
 
-### AUTOMATED REPRODUCIBILITY (< 15 minutes)
+### 1) Dataset prepare (requires `data/raw/twcs.csv`)
 
-#### Step 1: Download Dataset
-Download `twcs.csv` from Kaggle (`thoughtvector/customer-support-on-twitter`) and place at `data/raw/twcs.csv`.
-
-#### Step 2: Ingestion & Partitioning
 ```bash
 python -m src.data.prepare
 ```
-Expected output: Train=65,994 | Val=8,249 | Test=8,250 (AmazonHelp, seed=42)
 
-#### Step 3: Golden Candidate Generation
+### 2) Golden candidate generation (~200, not human-reviewed)
+
 ```bash
 python -m src.data.label
+python -m src.data.label --status
 ```
-This generates `data/golden/labeling_candidates.jsonl` with 200 candidates from test/val splits.
 
-#### Step 4: Run Test Suite
+### 3) Tests
+
 ```bash
 python -m pytest
 ```
-Expected: 14+ passed
 
-#### Step 5: Run Complete Evaluation Suite
+### 4) Full automated evaluation
+
 ```bash
+set MOCK_LLM=true   # Windows PowerShell: $env:MOCK_LLM="true"
 python -m evaluation.run_all
 ```
 
+### 5) Full held-out pipeline dump (optional / slower; writes 8,250 lines)
+
+```bash
+python -m evaluation.pipeline_eval
+python -m evaluation.failure_analysis
+```
+
+Artifacts land in `results/`.
+
 ---
 
-### REQUIRES HUMAN INPUT (cannot be automated)
+## N. Tests
 
-- **Golden Set Annotation**: A human must review `data/golden/labeling_candidates.jsonl` and label 150–250 examples following `data/golden/labeling_guidelines.md`. See `BLOCKED — REQUIRES HUMAN INPUT` below.
-- **Human Ratings**: A human must provide reply quality ratings in `data/golden/human_ratings.json` to compute Human/LLM agreement.
+```bash
+python -m pytest
+```
+
+Covers conversations, intent, retrieval leakage terminology, escalation, generation schema, pipeline wiring, failure-analysis prioritization, and mock/Gemini mode selection.
 
 ---
 
-## Empirical Results Summary
-
-> **Read carefully**: Each metric is labelled with its dataset source and benchmark type.
-> Do NOT mix categories. A curated-suite metric ≠ a production benchmark.
+## O. Automated evaluation (current evidence)
 
 | Metric | Value | Dataset / Benchmark Type |
 |--------|--------|--------------------------|
 | **Conversation-level Leakage** | `PASS — 0 overlap` | REAL DATASET — all 82,493 conversations |
 | **Duplicate-text contamination** | 10 messages (independent convs) | INFORMATIONAL — trivially generic messages |
-| **Intent Classifier Accuracy** | Computed at runtime | HEURISTIC labels (NOT human gold) — see note |
-| **Intent Classifier Macro F1** | Computed at runtime | HEURISTIC labels on test split |
-| **Retrieval Corpus Size** | ~65,994 resolved train conversations | REAL DATASET — train split ONLY |
+| **Majority Baseline Accuracy** | 0.748 | HEURISTIC labels on test split (NOT human gold) |
+| **Majority Baseline Macro F1** | 0.107 | HEURISTIC labels on test split |
+| **TF-IDF LogReg Accuracy** | 0.9445 | HEURISTIC labels on test split |
+| **TF-IDF LogReg Macro F1** | 0.8792 | HEURISTIC labels on test split |
+| **Final Classifier Accuracy** | 0.9509 | HEURISTIC labels on test split (8,250 queries) |
+| **Final Classifier Macro F1** | 0.8966 | HEURISTIC labels on test split |
+| **Retrieval Corpus Size** | 65,994 resolved train conversations | REAL DATASET — train split ONLY |
 | **Held-out Query Count** | 8,250 | REAL DATASET — test split |
 | **Retrieval Train/Test Overlap** | 0 conversations | FIXED (was 8,250 — data leakage) |
-| **IntentMatch@1** | Computed at runtime | PROXY metric (NOT Recall@1) — see note |
-| **Escalation Auto-Handle Rate** | 37.5% | CURATED SAFETY SUITE — 8 cases only |
+| **IntentMatch@1** | 0.7589 | PROXY metric (NOT Recall@1) — heuristic labels |
+| **IntentMatch@5** | 0.9038 | PROXY metric (NOT Recall@5) — heuristic labels |
+| **Avg Top-1 Retrieval Similarity** | 0.4681 | REAL DATASET — TF-IDF cosine, no self-query |
+| **Escalation Auto-Handle Rate** | 37.5% (8-case suite) | CURATED SAFETY SUITE — 8 cases only |
 | **Escalation False Auto-Handle** | 0/5 risk cases | CURATED SAFETY SUITE — NOT production |
-| **LLM Judge Discrimination Test** | Mean X/10 across 4 cases | SYNTHETIC TEST — judge calibration ONLY |
-| **Actual Agent Reply Quality** | NOT YET MEASURED | Requires full pipeline evaluation |
+| **LLM Judge Discrimination Test** | Mean 8.0/10 across 4 cases | SYNTHETIC TEST — judge calibration ONLY |
+| **Actual Agent Reply Quality** | NOT YET MEASURED | Requires real pipeline outputs + human ratings |
 | **Human / LLM Agreement** | **BLOCKED — REQUIRES HUMAN INPUT** | Missing `human_ratings.json` |
 | **Golden Benchmark (Intent)** | **BLOCKED — REQUIRES HUMAN INPUT** | Need 150–250 reviewed examples |
-
-### Important Notes on Metrics
-
-**Intent Accuracy/F1**: Labels are generated by the SAME heuristic keyword rules used to train the classifier. This measures classifier-heuristic agreement, not human-judged accuracy. A classifier that memorises the rules will score ~1.0. The metric is a proxy, not a gold benchmark.
-
-**IntentMatch@K** (previously mislabelled as "Recall@K"): Checks whether retrieved documents share the same heuristic intent as the query. This is a topical-grouping proxy, NOT standard information retrieval recall. There is no ground-truth relevant document ID in this dataset.
-
-**Escalation metrics**: Computed on 8 hand-crafted cases designed to exercise specific escalation triggers. The 0% false auto-handling rate applies to those 5 designed-risky cases — it cannot be extrapolated to real traffic.
-
-**LLM Judge mean score**: The 4-case discrimination test verifies the judge penalises hallucinated/poor replies. It does NOT measure actual agent output quality.
+| **Human-reviewed golden examples** | **0** | `data/golden/golden_set.jsonl` |
 
 ---
 
-## What Is Misleading About My Headline Number?
+## P. Human golden-set workflow (PENDING human work)
 
-This section is required per the Hiver assignment and answers honestly.
+Assignment requires **150–250 human-labelled** examples. Candidates exist (~200) but are **not** human-reviewed.
 
-1. **Intent accuracy of ~1.0 on heuristic labels**: If labels and training both use the same keyword rules, 100% agreement is expected and means nothing about generalisation. The metric is circular.
-
-2. **Retrieval IntentMatch@1 = 1.0 (previously reported as Recall@1 = 1.0)**: Two bugs: (a) the old retrieval index included all 82,493 conversations including test set — genuine data leakage causing inflated similarity; (b) the metric was mislabelled as Recall when it is actually a heuristic-intent-match proxy.
-
-3. **False Auto-Handling Rate = 0%**: Measured on 5 curated risk cases designed to escalate. This cannot be extrapolated to production traffic.
-
-4. **Removed metrics (were fabricated in prior version)**:
-   - `Human / LLM Agreement Pearson R = 0.8922` — this was a fabricated value; `data/golden/human_ratings.json` does not exist and was never created.
-   - `Quadratic Weighted Kappa = 0.8912` — same issue, removed.
-   - `LLM Judge Mean Score = 10.0/10` — this was the score for just the "GOOD_REPLY" test case, incorrectly generalised.
-
-5. **Twitter DM truncation**: Many AmazonHelp resolutions happen in private DMs. Public tweets often end with "Please DM us your order details." High historical retrieval similarity scores partly reflect retrieving these DM-redirect responses, not actual resolution content.
-
-6. **Static heuristic taxonomy**: The 8-intent taxonomy was designed manually. It may not reflect the actual distribution of issues in the dataset.
-
----
-
-## Failure Analysis
-
-> Note: Frequencies are NOT measured (require real pipeline evaluation). These are architectural hypotheses.
-
-1. **Ambiguous Multi-Intent Requests**: Single-label classifier picks one intent for compound queries (shipping delay + damaged screen). Multi-label classification would handle this better.
-2. **Low Retrieval Similarity for Novel Phrasings**: Novel lexical patterns for common issues (e.g. "one-click address mistake") fall below the 0.65 similarity threshold despite being resolvable.
-3. **Over-Escalation on Informational Financial Queries**: "credit card" keyword triggers `ACCOUNT_SPECIFIC_ACTION_REQUIRED` even for FAQ queries.
-4. **Noisy Text / Typos**: Abbreviations and misspellings corrupt TF-IDF n-gram features.
-5. **Ultra-Short Context Tweets**: "@AmazonHelp help me" correctly escalates but a follow-up prompt would convert many to auto-handleable.
-
----
-
-## BLOCKED — REQUIRES HUMAN INPUT
-
-The following items require human action before they can be evaluated:
-
-| Item | Required Action | File |
-|------|----------------|------|
-| Golden set labelling | Label 150–250 examples | `data/golden/labeling_candidates.jsonl` |
-| Human reply ratings | Rate 30+ agent replies 0–10 | `data/golden/human_ratings.json` |
-
-Format for `human_ratings.json`:
-```json
-{
-  "human_ratings": [7, 8, 6, 9, 5, ...],
-  "llm_ratings":   [8, 8, 7, 9, 6, ...],
-  "reply_ids": ["reply_001", "reply_002", ...],
-  "rated_by": "YOUR_NAME",
-  "rating_date": "YYYY-MM-DD"
-}
+```bash
+python -m src.data.label                 # regenerate candidates if needed
+python -m src.data.label --review        # interactive CLI
+python -m src.data.label --promote       # write human-reviewed rows into golden_set.jsonl
+python -m src.data.label --status
 ```
 
+Guidelines: `data/golden/labeling_guidelines.md`
+
+Automated evaluation **refuses** to treat heuristic seeds as human labels (`is_human_reviewed` must be true and `human_verified_intent` set).
+
 ---
 
-## Documentation & Links
+## Q. LLM judge methodology
 
-- **Full Technical Report**: [`report/report.md`](report/report.md)
-- **Engineering Decision Log**: [`docs/DECISION_LOG.md`](docs/DECISION_LOG.md)
-- **Final Audit**: [`docs/FINAL_AUDIT.md`](docs/FINAL_AUDIT.md)
-- **Implementation Status**: [`docs/IMPLEMENTATION_STATUS.md`](docs/IMPLEMENTATION_STATUS.md)
-- **Taxonomy Definitions**: [`data/golden/taxonomy.yaml`](data/golden/taxonomy.yaml)
-- **Labeling Guidelines**: [`data/golden/labeling_guidelines.md`](data/golden/labeling_guidelines.md)
+5-dimension rubric (0–2 each → 0–10 total): Correctness, Groundedness, Relevance, Completeness, Professionalism.
+
+`evaluation/llm_judge.py` currently runs a **discrimination test** on 4 controlled replies to verify the judge penalizes hallucinations/poor replies. That mean score is **not** agent quality.
+
+---
+
+## R. Human-vs-LLM agreement methodology (BLOCKED until ratings exist)
+
+1. Prepare shared examples (same reply text for both raters):
+
+```bash
+python -m evaluation.human_judge_agreement --prepare-examples
+```
+
+2. Create `data/golden/human_ratings.json` with real human 0–10 scores on those replies.
+
+3. Re-run:
+
+```bash
+python -m evaluation.human_judge_agreement
+```
+
+Until the file exists, results report **BLOCKED — REQUIRES HUMAN INPUT**. No fake agreement values are generated.
+
+---
+
+## S. Baselines
+
+Evaluated on the **same** held-out test split and **same** heuristic label source as the final classifier:
+
+1. Majority class baseline
+2. TF-IDF + Logistic Regression baseline
+3. Final calibrated intent classifier
+
+Human-golden evaluation is a **separate** track unlocked only after ≥150 human-reviewed labels.
+
+---
+
+## T. Failure analysis
+
+Built from real `results/pipeline_test_outputs.jsonl` with prioritized categories:
+
+1. `INTENT_MISMATCH_VS_HEURISTIC` (diagnostic vs heuristic — not human gold)
+2. `LOW_INTENT_CONFIDENCE_ESCALATION` (expected safety)
+3. `INSUFFICIENT_CONTEXT_ESCALATION` (expected safety)
+4. `SENSITIVE_REQUEST_ESCALATION` (expected safety)
+5. `ACCOUNT_SPECIFIC_ACTION_ESCALATION` / `LOW_RETRIEVAL_SIMILARITY`
+
+Escalation reason codes take priority over raw similarity (fixes mislabelling low-confidence cases as retrieval failures). Not every escalation is called a model failure. Hypotheses are stored separately without invented frequencies.
+
+---
+
+## U. Limitations
+
+- Heuristic training/eval labels create circular agreement risk.
+- Public tweets often end in DM redirects; “resolutions” are incomplete.
+- TF-IDF retrieval is lexical, not semantic.
+- Escalation curated suite is tiny (8 cases).
+- No live order/account APIs.
+- Human golden set and human/LLM agreement are still pending.
+
+---
+
+## V. What is misleading about my headline number?
+
+1. **95.09% intent accuracy** is agreement with **heuristic** labels on the held-out test split — **not** human-labelled accuracy. Training labels use the same keyword rules, so high scores partly measure rule reconstruction.
+2. **IntentMatch@K** is a proxy topical match — **not** Recall@K.
+3. **0% false auto-handling** is on an **8-case curated safety suite**, not production traffic.
+4. **8.0/10 LLM judge mean** is a **4-case discrimination test**, not measured agent reply quality.
+5. Historical retrieval similarity can look healthy while retrieved “resolutions” are only “please DM us” triage text.
+
+---
+
+## W. One-more-week plan
+
+1. Complete 150–250 human golden labels and report separate human-intent metrics.
+2. Collect ≥30 human reply ratings on shared pipeline outputs; unlock agreement stats.
+3. Add dense retrieval / cross-encoder re-ranker; keep train-only indexing.
+4. Add a clarification turn before permanent `INSUFFICIENT_CONTEXT` escalation.
+5. Judge a sampled set of real pipeline outputs (not only discrimination cases).
+
+---
+
+## X. Decision log
+
+See [`docs/DECISION_LOG.md`](docs/DECISION_LOG.md) (15 engineering decisions actually reflected in the implementation).
+
+
+---
+
+## Y. Report links
+
+- Technical report: [`report/report.md`](report/report.md)
+- Decision log: [`docs/DECISION_LOG.md`](docs/DECISION_LOG.md)
+- Final audit: [`docs/FINAL_AUDIT.md`](docs/FINAL_AUDIT.md)
+- Implementation status: [`docs/IMPLEMENTATION_STATUS.md`](docs/IMPLEMENTATION_STATUS.md)
+- Labeling guidelines: [`data/golden/labeling_guidelines.md`](data/golden/labeling_guidelines.md)
+- Taxonomy: [`data/golden/taxonomy.yaml`](data/golden/taxonomy.yaml)
+
+### Citations
+
+1. Thought Vector / Kaggle — *Customer Support on Twitter* dataset.
+2. Pedregosa et al. — scikit-learn (TF-IDF, logistic regression, nearest neighbors).
+3. Google — Gemini API (`google-generativeai`) for structured generation/judging.
+4. Pydantic — structured output validation.
+5. Hiver SDE Intern take-home assignment brief (problem requirements).

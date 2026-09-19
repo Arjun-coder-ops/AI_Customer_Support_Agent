@@ -1,99 +1,219 @@
 {
   "evaluation_status": "COMPLETED",
+  "audit_timestamp": "2026-09-10",
+  "dataset": "REAL DATASET \u2014 AmazonHelp from Customer Support on Twitter (twcs.csv)",
+  "brand": "AmazonHelp",
+  "total_conversations": 82493,
+  "train_conversations": 65994,
+  "val_conversations": 8249,
+  "test_conversations": 8250,
   "data_leakage": {
-    "has_leakage": true,
-    "leakage_status": "FAILED (DATA LEAKAGE DETECTED)",
+    "conversation_id_leakage": false,
+    "conversation_leakage_status": "PASS \u2014 zero conversation-ID overlap across train/val/test/golden splits",
     "train_val_id_overlap": 0,
     "train_test_id_overlap": 0,
     "train_golden_id_overlap": 0,
     "val_test_id_overlap": 0,
-    "train_test_exact_message_overlap": 10
+    "duplicate_text_contamination_risk": "PRESENT",
+    "train_test_exact_message_overlap_count": 10,
+    "duplicate_message_assessment": "INDEPENDENT_CONVERSATIONS",
+    "duplicate_message_note": "10 identical customer message strings appear in both train and test. All have DIFFERENT conversation_ids (independent support threads). These are generic short messages (e.g. '@amazonhelp ok', '@amazonhelp hi'). This represents duplicate-text contamination risk but NOT conversation leakage. Recommendation: For intent evaluation, filter out messages shorter than 5 tokens to avoid these trivially ambiguous examples.",
+    "split_sizes": {
+      "train": 65994,
+      "val": 8249,
+      "test": 8250,
+      "golden": 200
+    },
+    "has_leakage": false
   },
   "intent_classification": {
+    "dataset_status": "REAL_DATASET_TEST_SPLIT (data/processed/test.jsonl, 8250 conversations)",
+    "label_type": "HEURISTIC \u2014 keyword rules, NOT human-labelled",
+    "eval_sample_count": 8250,
+    "golden_benchmark_status": "BLOCKED \u2014 REQUIRES HUMAN INPUT: Only 0 human-reviewed examples exist (need 150\u2013250).",
     "majority": {
       "model": "MajorityBaseline",
-      "accuracy": 0.0,
-      "macro_precision": 0.0,
-      "macro_recall": 0.0,
-      "macro_f1": 0.0,
-      "weighted_f1": 0.0,
+      "accuracy": 0.748,
+      "macro_precision": 0.0935,
+      "macro_recall": 0.125,
+      "macro_f1": 0.107,
+      "weighted_f1": 0.6402,
       "predicted_label": "general_inquiry_feedback"
     },
     "tfidf_logreg": {
       "model": "TFIDF_LogisticRegression",
-      "accuracy": 1.0,
-      "macro_precision": 1.0,
-      "macro_recall": 1.0,
-      "macro_f1": 1.0,
-      "weighted_f1": 1.0,
+      "accuracy": 0.9445,
+      "macro_precision": 0.9394,
+      "macro_recall": 0.8298,
+      "macro_f1": 0.8792,
+      "weighted_f1": 0.9417,
       "per_class_metrics": {
-        "refund_return_request": {
-          "precision": 1.0,
-          "recall": 1.0,
-          "f1-score": 1.0,
-          "support": 1.0
+        "account_access_issue": {
+          "precision": 0.9236363636363636,
+          "recall": 0.8494983277591973,
+          "f1-score": 0.8850174216027874,
+          "support": 299.0
         },
-        "accuracy": 1.0,
+        "general_inquiry_feedback": {
+          "precision": 0.9439853076216712,
+          "recall": 0.9995138551288284,
+          "f1-score": 0.9709563164108619,
+          "support": 6171.0
+        },
+        "missing_item": {
+          "precision": 0.9795918367346939,
+          "recall": 0.8571428571428571,
+          "f1-score": 0.9142857142857143,
+          "support": 56.0
+        },
+        "order_cancellation": {
+          "precision": 0.9548872180451128,
+          "recall": 0.8220064724919094,
+          "f1-score": 0.8834782608695653,
+          "support": 309.0
+        },
+        "payment_billing_issue": {
+          "precision": 0.9274193548387096,
+          "recall": 0.8098591549295775,
+          "f1-score": 0.8646616541353384,
+          "support": 142.0
+        },
+        "product_defect_damage": {
+          "precision": 0.868421052631579,
+          "recall": 0.8048780487804879,
+          "f1-score": 0.8354430379746836,
+          "support": 82.0
+        },
+        "refund_return_request": {
+          "precision": 0.919661733615222,
+          "recall": 0.6915739268680445,
+          "f1-score": 0.7894736842105263,
+          "support": 629.0
+        },
+        "shipping_delay": {
+          "precision": 0.9977924944812362,
+          "recall": 0.8042704626334519,
+          "f1-score": 0.8906403940886699,
+          "support": 562.0
+        },
+        "accuracy": 0.9444848484848485,
         "macro avg": {
-          "precision": 1.0,
-          "recall": 1.0,
-          "f1-score": 1.0,
-          "support": 1.0
+          "precision": 0.9394244202005735,
+          "recall": 0.8298428882167942,
+          "f1-score": 0.8792445604472683,
+          "support": 8250.0
         },
         "weighted avg": {
-          "precision": 1.0,
-          "recall": 1.0,
-          "f1-score": 1.0,
-          "support": 1.0
+          "precision": 0.9446725559198793,
+          "recall": 0.9444848484848485,
+          "f1-score": 0.9416961882529397,
+          "support": 8250.0
         }
       }
     },
     "final_classifier": {
       "model": "FinalIntentClassifier",
-      "accuracy": 1.0,
-      "macro_precision": 1.0,
-      "macro_recall": 1.0,
-      "macro_f1": 1.0,
-      "weighted_f1": 1.0,
+      "accuracy": 0.9509,
+      "macro_precision": 0.9327,
+      "macro_recall": 0.8676,
+      "macro_f1": 0.8966,
+      "weighted_f1": 0.9486,
       "per_class_metrics": {
-        "refund_return_request": {
-          "precision": 1.0,
-          "recall": 1.0,
-          "f1-score": 1.0,
-          "support": 1.0
+        "account_access_issue": {
+          "precision": 0.9230769230769231,
+          "recall": 0.882943143812709,
+          "f1-score": 0.9025641025641026,
+          "support": 299.0
         },
-        "accuracy": 1.0,
+        "general_inquiry_feedback": {
+          "precision": 0.9528593508500772,
+          "recall": 0.9990277102576568,
+          "f1-score": 0.9753975160193022,
+          "support": 6171.0
+        },
+        "missing_item": {
+          "precision": 0.9444444444444444,
+          "recall": 0.9107142857142857,
+          "f1-score": 0.9272727272727272,
+          "support": 56.0
+        },
+        "order_cancellation": {
+          "precision": 0.9565217391304348,
+          "recall": 0.8543689320388349,
+          "f1-score": 0.9025641025641026,
+          "support": 309.0
+        },
+        "payment_billing_issue": {
+          "precision": 0.9071428571428571,
+          "recall": 0.8943661971830986,
+          "f1-score": 0.900709219858156,
+          "support": 142.0
+        },
+        "product_defect_damage": {
+          "precision": 0.8571428571428571,
+          "recall": 0.8780487804878049,
+          "f1-score": 0.8674698795180723,
+          "support": 82.0
+        },
+        "refund_return_request": {
+          "precision": 0.9243697478991597,
+          "recall": 0.699523052464229,
+          "f1-score": 0.7963800904977375,
+          "support": 629.0
+        },
+        "shipping_delay": {
+          "precision": 0.9956896551724138,
+          "recall": 0.8220640569395018,
+          "f1-score": 0.9005847953216374,
+          "support": 562.0
+        },
+        "accuracy": 0.9509090909090909,
         "macro avg": {
-          "precision": 1.0,
-          "recall": 1.0,
-          "f1-score": 1.0,
-          "support": 1.0
+          "precision": 0.932655946857396,
+          "recall": 0.8676320198622651,
+          "f1-score": 0.8966178042019797,
+          "support": 8250.0
         },
         "weighted avg": {
-          "precision": 1.0,
-          "recall": 1.0,
-          "f1-score": 1.0,
-          "support": 1.0
+          "precision": 0.9508673112741197,
+          "recall": 0.9509090909090909,
+          "f1-score": 0.9485999139000653,
+          "support": 8250.0
         }
       }
+    },
+    "human_golden_evaluation": {
+      "status": "BLOCKED \u2014 REQUIRES HUMAN INPUT: Only 0 human-reviewed examples exist (need 150\u2013250).",
+      "human_reviewed_count": 0,
+      "label_type": "NONE \u2014 no human-reviewed golden labels"
     }
   },
   "historical_retrieval": {
-    "index_corpus_case_count": 82493,
+    "dataset_status": "REAL DATASET \u2014 AmazonHelp conversations",
+    "index_corpus_source": "data/processed/train.jsonl (training split only)",
+    "index_corpus_conversation_count": 65994,
+    "index_corpus_resolved_case_count": 65994,
+    "held_out_query_source": "data/processed/test.jsonl (test split only)",
     "held_out_query_count": 8250,
-    "evaluation_methodology": "Held-out queries evaluated against training index corpus (zero self-query leakage)",
-    "recall_at_1": 1.0,
-    "recall_at_3": 1.0,
-    "recall_at_5": 1.0,
-    "avg_top1_similarity": 0.9518,
+    "train_test_conversation_overlap": 0,
+    "leakage_status": "PASS \u2014 zero train/test conversation overlap in retrieval corpus",
+    "evaluation_methodology": "Held-out test queries evaluated against a training-only retrieval index. Retrieval corpus = train.jsonl resolved conversations ONLY (not resolved_cases.jsonl which contains all splits). Relevance is approximated via heuristic intent matching \u2014 see metric_naming_note.",
+    "metric_naming_note": "Metrics are named 'intent_match_at_k', NOT 'recall_at_k'. There is no ground-truth relevant document ID in this dataset. IntentMatch@K measures whether any of the top-K retrieved documents share the same heuristic keyword-intent as the query. This is a DIAGNOSTIC PROXY metric. The heuristic mapper is NOT a gold oracle \u2014 queries without explicit keywords default to 'general_inquiry_feedback', which can inflate IntentMatch scores.",
+    "intent_match_at_1": 0.7589,
+    "intent_match_at_3": 0.8753,
+    "intent_match_at_5": 0.9038,
+    "avg_top1_similarity": 0.4681,
     "similarity_distribution": {
       "min": 0.0,
       "max": 1.0,
-      "mean": 0.9518,
-      "median": 1.0
+      "mean": 0.4681,
+      "median": 0.443
     }
   },
   "escalation_policy": {
+    "dataset_status": "CURATED SAFETY SUITE \u2014 8 hand-crafted policy test cases",
+    "benchmark_type": "POLICY_SAFETY_TEST",
+    "benchmark_caveat": "This evaluation uses 8 CURATED test cases designed to exercise specific escalation triggers \u2014 NOT real customer traffic samples. false_auto_handling_rate=0.0 means 0/3 false auto-handles among the 3 designed-safe cases in this suite. This CANNOT be extrapolated to a real-world false auto-handling rate without a large annotated escalation benchmark drawn from actual traffic.",
     "total_test_cases": 8,
     "correct_auto_handle": 3,
     "incorrect_auto_handle_false_negative": 0,
@@ -141,8 +261,12 @@
     ]
   },
   "llm_judge_evaluation": {
-    "evaluated_replies_count": 4,
-    "mean_total_score": 8.0,
+    "evaluation_type": "JUDGE_DISCRIMINATION_TEST",
+    "dataset_status": "SYNTHETIC/CONTROLLED TEST \u2014 4 hand-crafted cases spanning quality spectrum",
+    "benchmark_caveat": "This test verifies the judge's ability to discriminate between Good, Acceptable, Hallucinated, and Poor replies. The mean_total_score reflects the AVERAGE across these 4 controlled cases \u2014 it is NOT a measure of actual agent reply quality. Do NOT report this as 'Agent Reply Quality = X/10'. Actual pipeline output quality is NOT YET MEASURED.",
+    "actual_agent_quality": "NOT YET MEASURED \u2014 requires judging real pipeline outputs and human ratings",
+    "discrimination_test_case_count": 4,
+    "discrimination_test_mean_score": 8.0,
     "mean_correctness": 1.75,
     "mean_groundedness": 1.0,
     "mean_relevance": 1.75,
@@ -155,7 +279,9 @@
         "professionalism": 2,
         "total_score": 10,
         "reasoning": "Groundedness=2, Relevance=2, Completeness=2, Professionalism=2",
-        "case_type": "GOOD_REPLY"
+        "judge_mode": "MOCK_HEURISTIC",
+        "case_type": "GOOD_REPLY",
+        "expected_score_range": "9-10"
       },
       {
         "correctness": 2,
@@ -165,7 +291,9 @@
         "professionalism": 2,
         "total_score": 10,
         "reasoning": "Groundedness=2, Relevance=2, Completeness=2, Professionalism=2",
-        "case_type": "ACCEPTABLE_REPLY"
+        "judge_mode": "MOCK_HEURISTIC",
+        "case_type": "ACCEPTABLE_REPLY",
+        "expected_score_range": "7-8"
       },
       {
         "correctness": 2,
@@ -175,7 +303,9 @@
         "professionalism": 2,
         "total_score": 8,
         "reasoning": "Groundedness=0, Relevance=2, Completeness=2, Professionalism=2",
-        "case_type": "HALLUCINATED_REPLY"
+        "judge_mode": "MOCK_HEURISTIC",
+        "case_type": "HALLUCINATED_REPLY",
+        "expected_score_range": "3-5"
       },
       {
         "correctness": 1,
@@ -185,72 +315,280 @@
         "professionalism": 2,
         "total_score": 4,
         "reasoning": "Groundedness=0, Relevance=1, Completeness=0, Professionalism=2",
-        "case_type": "POOR_SHORT_REPLY"
+        "judge_mode": "MOCK_HEURISTIC",
+        "case_type": "POOR_SHORT_REPLY",
+        "expected_score_range": "0-3"
       }
     ]
   },
   "human_llm_agreement": {
     "status": "BLOCKED \u2014 REQUIRES HUMAN INPUT",
     "is_human_evaluated": false,
-    "message": "Human rating file 'data/golden/human_ratings.json' is missing. Human evaluation dataset must be provided by a human reviewer.",
+    "message": "Human rating file 'data/golden/human_ratings.json' is missing. Human evaluation must be provided by a human reviewer.",
+    "how_to_create": "HOW TO CREATE data/golden/human_ratings.json\n===========================================\n\n1. Select the SAME examples the judge will score.\n   Preferred source: data/golden/judge_agreement_examples.jsonl\n   (create with: python -m evaluation.human_judge_agreement --prepare-examples)\n\n   Each example must include:\n     - example_id\n     - customer_message\n     - generated_reply\n     - predicted_intent\n     - retrieved_evidence\n\n2. Rate each generated_reply on the same 0\u201310 total scale used by the LLM judge\n   (Correctness + Groundedness + Relevance + Completeness + Professionalism).\n\n3. Write data/golden/human_ratings.json with this schema:\n\n{\n  \"rated_by\": \"YOUR_NAME\",\n  \"rating_date\": \"YYYY-MM-DD\",\n  \"rubric\": \"0-10 total across correctness/groundedness/relevance/completeness/professionalism\",\n  \"examples\": [\n    {\n      \"example_id\": \"agr_001\",\n      \"customer_message\": \"...\",\n      \"generated_reply\": \"...\",\n      \"human_total_score\": 7,\n      \"llm_total_score\": null\n    }\n  ]\n}\n\nNotes:\n- llm_total_score may be null; the agreement script will fill it by\n  running the judge on the SAME generated_reply text.\n- Do NOT invent ratings.\n- Until this file exists with real human scores, agreement remains BLOCKED.",
+    "shared_examples_file": "data/golden/judge_agreement_examples.jsonl",
     "human_mean_score": "NOT YET MEASURED",
     "llm_judge_mean_score": "NOT YET MEASURED",
     "pearson_correlation": "NOT YET MEASURED",
     "quadratic_weighted_kappa": "NOT YET MEASURED"
   },
   "failure_analysis": {
-    "failure_analysis_summary": "Extracted 5 empirical failure modes from pipeline evaluation.",
+    "failure_analysis_status": "REAL_DATA",
+    "failure_source": "REAL_PIPELINE_OUTPUTS",
+    "real_examples_collected": 5,
+    "pipeline_outputs_path": "results/pipeline_test_outputs.jsonl",
+    "pipeline_outputs_exist": true,
+    "total_cases_scanned": 8250,
+    "auto_handle_count": 557,
+    "escalate_count": 7693,
+    "reason_code_counts": {
+      "AUTO_HANDLE": 557,
+      "NO_RELEVANT_HISTORICAL_EVIDENCE": 6827,
+      "INSUFFICIENT_CONTEXT": 520,
+      "LOW_INTENT_CONFIDENCE": 215,
+      "SENSITIVE_REQUEST": 129,
+      "ACCOUNT_SPECIFIC_ACTION_REQUIRED": 2
+    },
+    "category_counts": {
+      "INTENT_MISMATCH_VS_HEURISTIC": 199,
+      "LOW_INTENT_CONFIDENCE_ESCALATION": 151,
+      "INSUFFICIENT_CONTEXT_ESCALATION": 520,
+      "SENSITIVE_REQUEST_ESCALATION": 127,
+      "ACCOUNT_SPECIFIC_ACTION_ESCALATION": 2,
+      "LOW_RETRIEVAL_SIMILARITY": 6701
+    },
+    "summary": "MEASURED categories from 8250 held-out pipeline outputs. Top 5 categories reported with real examples. Escalations are NOT automatically labelled as model failures.",
     "failure_modes": [
+      {
+        "category": "INTENT_MISMATCH_VS_HEURISTIC",
+        "case_kind": "diagnostic_disagreement",
+        "measurement_status": "measured",
+        "observed_count": 199,
+        "observed_on": "results/pipeline_test_outputs.jsonl (8250 held-out test pipeline outputs)",
+        "interpretation_note": "Classifier prediction disagrees with the heuristic keyword label. This is a diagnostic signal, NOT proof of human-labelled error.",
+        "real_example": {
+          "category": "INTENT_MISMATCH_VS_HEURISTIC",
+          "case_kind": "diagnostic_disagreement",
+          "measurement_status": "measured",
+          "source": "REAL_PIPELINE_OUTPUT",
+          "interpretation_note": "Classifier prediction disagrees with the heuristic keyword label. This is a diagnostic signal, NOT proof of human-labelled error.",
+          "customer_message": "@115850 @115821 where is my order?? Nonresponse fem seller or amazon, r u blufding with customers?? https://t.co/fxpVl8zR1r",
+          "conversation_id": "conv_778968",
+          "predicted_intent": "general_inquiry_feedback",
+          "heuristic_intent": "shipping_delay",
+          "reference_label_type": "HEURISTIC_NOT_HUMAN",
+          "confidence": 0.9689,
+          "retrieval_similarity": 0.418,
+          "escalated": true,
+          "escalation_reason": "NO_RELEVANT_HISTORICAL_EVIDENCE",
+          "generated_reply": "[MOCK] We have escalated your inquiry regarding 'general inquiry feedback' to a customer specialist for manual review. (Reason: NO_RELEVANT_HISTORICAL_EVIDENCE)",
+          "likely_root_cause": "Classifier prediction disagrees with the heuristic keyword label. This is a diagnostic signal, NOT proof of human-labelled error.",
+          "proposed_fix": "Obtain human golden labels; retrain/evaluate against human intents rather than heuristic keywords."
+        },
+        "likely_root_cause": "Classifier prediction disagrees with the heuristic keyword label. This is a diagnostic signal, NOT proof of human-labelled error.",
+        "proposed_fix": "Obtain human golden labels; retrain/evaluate against human intents rather than heuristic keywords."
+      },
+      {
+        "category": "LOW_INTENT_CONFIDENCE_ESCALATION",
+        "case_kind": "expected_safety_escalation",
+        "measurement_status": "measured",
+        "observed_count": 151,
+        "observed_on": "results/pipeline_test_outputs.jsonl (8250 held-out test pipeline outputs)",
+        "interpretation_note": "Policy correctly escalates when intent confidence is below the configured threshold. This is expected safety behaviour, not a pipeline bug.",
+        "real_example": {
+          "category": "LOW_INTENT_CONFIDENCE_ESCALATION",
+          "case_kind": "expected_safety_escalation",
+          "measurement_status": "measured",
+          "source": "REAL_PIPELINE_OUTPUT",
+          "interpretation_note": "Policy correctly escalates when intent confidence is below the configured threshold. This is expected safety behaviour, not a pipeline bug.",
+          "customer_message": "@115821 So... I got a bunch of emails stating that my reviews were posted. I didn't write any reviews. Someone went into my acct &amp; posted 5 star reviews, all but 1 were in new seller Kama Pound's storefront. Changed password, but something there is hinky.",
+          "conversation_id": "conv_2562189",
+          "predicted_intent": "account_access_issue",
+          "heuristic_intent": "account_access_issue",
+          "reference_label_type": "HEURISTIC_NOT_HUMAN",
+          "confidence": 0.6782,
+          "retrieval_similarity": 0.5951,
+          "escalated": true,
+          "escalation_reason": "LOW_INTENT_CONFIDENCE",
+          "generated_reply": "[MOCK] We have escalated your inquiry regarding 'account access issue' to a customer specialist for manual review. (Reason: LOW_INTENT_CONFIDENCE)",
+          "likely_root_cause": "Policy correctly escalates when intent confidence is below the configured threshold. This is expected safety behaviour, not a pipeline bug.",
+          "proposed_fix": "Keep threshold; optionally add a clarification turn before permanent escalation for borderline confidence."
+        },
+        "likely_root_cause": "Policy correctly escalates when intent confidence is below the configured threshold. This is expected safety behaviour, not a pipeline bug.",
+        "proposed_fix": "Keep threshold; optionally add a clarification turn before permanent escalation for borderline confidence."
+      },
+      {
+        "category": "INSUFFICIENT_CONTEXT_ESCALATION",
+        "case_kind": "expected_safety_escalation",
+        "measurement_status": "measured",
+        "observed_count": 520,
+        "observed_on": "results/pipeline_test_outputs.jsonl (8250 held-out test pipeline outputs)",
+        "interpretation_note": "Policy correctly escalates ultra-short / low-information messages. Expected safety behaviour; architectural limitation is lack of a clarification turn.",
+        "real_example": {
+          "category": "INSUFFICIENT_CONTEXT_ESCALATION",
+          "case_kind": "expected_safety_escalation",
+          "measurement_status": "measured",
+          "source": "REAL_PIPELINE_OUTPUT",
+          "interpretation_note": "Policy correctly escalates ultra-short / low-information messages. Expected safety behaviour; architectural limitation is lack of a clarification turn.",
+          "customer_message": "Amazon\u30d7\u30e9\u30a4\u30e0\u5049\u5927",
+          "conversation_id": "conv_1737960",
+          "predicted_intent": "general_inquiry_feedback",
+          "heuristic_intent": "general_inquiry_feedback",
+          "reference_label_type": "HEURISTIC_NOT_HUMAN",
+          "confidence": 0.9896,
+          "retrieval_similarity": 0.0,
+          "escalated": true,
+          "escalation_reason": "INSUFFICIENT_CONTEXT",
+          "generated_reply": "[MOCK] We have escalated your inquiry regarding 'general inquiry feedback' to a customer specialist for manual review. (Reason: INSUFFICIENT_CONTEXT)",
+          "likely_root_cause": "Policy correctly escalates ultra-short / low-information messages. Expected safety behaviour; architectural limitation is lack of a clarification turn.",
+          "proposed_fix": "Ask a safe clarification question and re-evaluate after the customer replies."
+        },
+        "likely_root_cause": "Policy correctly escalates ultra-short / low-information messages. Expected safety behaviour; architectural limitation is lack of a clarification turn.",
+        "proposed_fix": "Ask a safe clarification question and re-evaluate after the customer replies."
+      },
+      {
+        "category": "SENSITIVE_REQUEST_ESCALATION",
+        "case_kind": "expected_safety_escalation",
+        "measurement_status": "measured",
+        "observed_count": 127,
+        "observed_on": "results/pipeline_test_outputs.jsonl (8250 held-out test pipeline outputs)",
+        "interpretation_note": "Policy escalates legal/fraud/high-risk keyword matches. Expected safety behaviour.",
+        "real_example": {
+          "category": "SENSITIVE_REQUEST_ESCALATION",
+          "case_kind": "expected_safety_escalation",
+          "measurement_status": "measured",
+          "source": "REAL_PIPELINE_OUTPUT",
+          "interpretation_note": "Policy escalates legal/fraud/high-risk keyword matches. Expected safety behaviour.",
+          "customer_message": "@AmazonHelp amazon cheat me they did not refund my money they neglect my money  tottly fraud compny",
+          "conversation_id": "conv_931592",
+          "predicted_intent": "refund_return_request",
+          "heuristic_intent": "refund_return_request",
+          "reference_label_type": "HEURISTIC_NOT_HUMAN",
+          "confidence": 0.9676,
+          "retrieval_similarity": 0.5083,
+          "escalated": true,
+          "escalation_reason": "SENSITIVE_REQUEST",
+          "generated_reply": "[MOCK] We have escalated your inquiry regarding 'refund return request' to a customer specialist for manual review. (Reason: SENSITIVE_REQUEST)",
+          "likely_root_cause": "Policy escalates legal/fraud/high-risk keyword matches. Expected safety behaviour.",
+          "proposed_fix": "Retain escalation; refine keyword list with false-positive review."
+        },
+        "likely_root_cause": "Policy escalates legal/fraud/high-risk keyword matches. Expected safety behaviour.",
+        "proposed_fix": "Retain escalation; refine keyword list with false-positive review."
+      },
+      {
+        "category": "LOW_RETRIEVAL_SIMILARITY",
+        "case_kind": "architectural_limitation",
+        "measurement_status": "measured",
+        "observed_count": 6701,
+        "observed_on": "results/pipeline_test_outputs.jsonl (8250 held-out test pipeline outputs)",
+        "interpretation_note": "Top historical evidence similarity is below the escalation threshold (or reason_code=NO_RELEVANT_HISTORICAL_EVIDENCE). Architectural limitation of TF-IDF lexical retrieval \u2014 not proof the retrieved case is irrelevant to a human.",
+        "real_example": {
+          "category": "LOW_RETRIEVAL_SIMILARITY",
+          "case_kind": "architectural_limitation",
+          "measurement_status": "measured",
+          "source": "REAL_PIPELINE_OUTPUT",
+          "interpretation_note": "Top historical evidence similarity is below the escalation threshold (or reason_code=NO_RELEVANT_HISTORICAL_EVIDENCE). Architectural limitation of TF-IDF lexical retrieval \u2014 not proof the retrieved case is irrelevant to a human.",
+          "customer_message": "So beyond irritated with @AmazonHelp and @123967. Package says it was attempted delivered, but no notice left. Called USPS and wait time to talk was &gt;1 hr. Look on Amazon\u2019s site for help and am just given USPS phone number",
+          "conversation_id": "conv_2111043",
+          "predicted_intent": "general_inquiry_feedback",
+          "heuristic_intent": "general_inquiry_feedback",
+          "reference_label_type": "HEURISTIC_NOT_HUMAN",
+          "confidence": 0.9799,
+          "retrieval_similarity": 0.3618,
+          "escalated": true,
+          "escalation_reason": "NO_RELEVANT_HISTORICAL_EVIDENCE",
+          "generated_reply": "[MOCK] We have escalated your inquiry regarding 'general inquiry feedback' to a customer specialist for manual review. (Reason: NO_RELEVANT_HISTORICAL_EVIDENCE)",
+          "likely_root_cause": "Top historical evidence similarity is below the escalation threshold (or reason_code=NO_RELEVANT_HISTORICAL_EVIDENCE). Architectural limitation of TF-IDF lexical retrieval \u2014 not proof the retrieved case is irrelevant to a human.",
+          "proposed_fix": "Augment TF-IDF with dense embeddings / cross-encoder re-ranking."
+        },
+        "likely_root_cause": "Top historical evidence similarity is below the escalation threshold (or reason_code=NO_RELEVANT_HISTORICAL_EVIDENCE). Architectural limitation of TF-IDF lexical retrieval \u2014 not proof the retrieved case is irrelevant to a human.",
+        "proposed_fix": "Augment TF-IDF with dense embeddings / cross-encoder re-ranking."
+      }
+    ],
+    "hypotheses": [
       {
         "failure_id": "FAIL_001",
         "failure_name": "Ambiguous Multi-Intent Customer Request",
-        "frequency": "14.2% of evaluated error cases",
-        "real_example": "My order arrived late and when I opened it the screen was cracked, I want a refund!",
-        "expected_result": "Intent classified as 'product_defect_damage' or 'refund_return_request' with escalation flag for compound issue.",
-        "actual_result": "Classifier assigned 'shipping_delay' (conf=0.52), triggering premature escalation due to low intent confidence.",
-        "likely_root_cause": "Single-label text classifier forced to pick one intent for a compound issue containing shipping, damage, and refund signals.",
-        "proposed_fix": "Implement multi-label intent classification and hierarchy rules prioritizing product damage over shipping delay."
+        "source": "ILLUSTRATIVE_HYPOTHESIS \u2014 not measured from real evaluation run",
+        "measurement_status": "hypothesis",
+        "frequency": "NOT MEASURED \u2014 requires human-labelled multi-intent analysis",
+        "illustrative_example": {
+          "customer_message": "My order arrived late and when I opened it the screen was cracked, I want a refund!",
+          "predicted_intent": "shipping_delay (illustrative \u2014 may differ in real run)",
+          "confidence": "ILLUSTRATIVE \u2014 not measured",
+          "note": "This example is illustrative of the failure mode, not a measured pipeline output."
+        },
+        "architectural_root_cause": "The single-label text classifier must choose one intent for queries containing multiple issues such as shipping delay, product damage, and refund requests.",
+        "hypothesis": "Compound customer requests may be difficult for a single-label intent classifier and can lead to incorrect evidence retrieval or escalation decisions.",
+        "proposed_fix": "Implement multi-label intent classification and priority rules for compound requests."
       },
       {
         "failure_id": "FAIL_002",
-        "failure_name": "Low Retrieval Similarity for Novel Order Edge Cases",
-        "frequency": "9.8% of evaluated error cases",
-        "real_example": "I entered my old apartment number by mistake during one-click checkout 5 minutes ago.",
-        "expected_result": "Retrieve historical case on address correction before dispatch or auto-escalate with ACCOUNT_SPECIFIC_ACTION_REQUIRED.",
-        "actual_result": "Top retrieved case similarity was 0.42 (below 0.65 similarity threshold), triggering NO_RELEVANT_HISTORICAL_EVIDENCE escalation.",
-        "likely_root_cause": "Historical retrieval corpus lacks exact matches for fast one-click address changes.",
-        "proposed_fix": "Expand knowledge base corpus with self-service address change guidelines and dense semantic embeddings."
+        "failure_name": "Low Retrieval Similarity for Novel Edge Cases",
+        "source": "ILLUSTRATIVE_HYPOTHESIS \u2014 see also measured LOW_RETRIEVAL_SIMILARITY category",
+        "measurement_status": "hypothesis",
+        "frequency": "NOT MEASURED as a distinct novel-phrasing subset",
+        "illustrative_example": {
+          "customer_message": "I entered my old apartment number by mistake during one-click checkout 5 minutes ago.",
+          "retrieval_similarity": "ILLUSTRATIVE \u2014 expected to be lower for lexically novel phrasing",
+          "note": "This example illustrates how TF-IDF retrieval can struggle with novel wording. Measured low-similarity escalations appear separately under LOW_RETRIEVAL_SIMILARITY."
+        },
+        "architectural_root_cause": "TF-IDF cosine similarity is sensitive to vocabulary overlap.",
+        "hypothesis": "Novel phrasing may produce weak historical evidence even when a semantically similar historical case exists.",
+        "proposed_fix": "Replace or augment TF-IDF retrieval with dense semantic embeddings such as sentence-transformers."
       },
       {
         "failure_id": "FAIL_003",
-        "failure_name": "Unnecessary Escalation on Standard Self-Service Questions",
-        "frequency": "7.5% of evaluated error cases",
-        "real_example": "How can I update my credit card on file?",
-        "expected_result": "Auto-handle by providing link to self-service Account -> Payment Methods page.",
-        "actual_result": "Escalated with code 'ACCOUNT_SPECIFIC_ACTION_REQUIRED' because key term 'credit card' triggered safety rule.",
-        "likely_root_cause": "Escalation rule keyword matcher over-indexed on 'credit card' without distinguishing informational vs transaction execution requests.",
-        "proposed_fix": "Refine keyword policy rules to allow auto-handling of self-service informational queries while blocking actual account mutation actions."
+        "failure_name": "Unnecessary Escalation on Self-Service Informational Queries",
+        "source": "ILLUSTRATIVE_HYPOTHESIS \u2014 not measured from real evaluation run",
+        "measurement_status": "hypothesis",
+        "frequency": "NOT MEASURED \u2014 requires human policy review",
+        "illustrative_example": {
+          "customer_message": "How can I update my credit card on file?",
+          "escalation_reason": "ACCOUNT_SPECIFIC_ACTION_REQUIRED (illustrative)",
+          "note": "The current keyword policy may treat an informational question similarly to an account mutation request."
+        },
+        "architectural_root_cause": "ACCOUNT_SPECIFIC_ACTION_REQUIRED uses keyword matching without fully distinguishing informational questions from mutations.",
+        "hypothesis": "Keyword-based account-action rules may over-trigger on some informational customer questions.",
+        "proposed_fix": "Distinguish informational account queries from account mutation requests using a dedicated intent or policy layer."
       },
       {
         "failure_id": "FAIL_004",
         "failure_name": "Noisy Text / Typo Degradation",
-        "frequency": "6.1% of evaluated error cases",
-        "real_example": "ordr #99211 non deliverd state shows rtrnd to sender pls help",
-        "expected_result": "Classified as 'shipping_delay' and retrieved returned-to-sender historical policy.",
-        "actual_result": "Classified as 'general_inquiry_feedback' due to uncorrected typos.",
-        "likely_root_cause": "TF-IDF / N-gram feature representation is sensitive to word spelling corruptions.",
-        "proposed_fix": "Add sub-word BPE tokenization or domain spell-correction pre-processing step."
+        "source": "ILLUSTRATIVE_HYPOTHESIS \u2014 observed during raw dataset inspection",
+        "measurement_status": "hypothesis",
+        "frequency": "NOT MEASURED \u2014 requires dedicated noisy-text evaluation",
+        "illustrative_example": {
+          "customer_message": "ordr #99211 non deliverd state shows rtrnd to sender pls help",
+          "predicted_intent": "general_inquiry_feedback (illustrative \u2014 actual pipeline output may differ)",
+          "note": "This example is illustrative of noisy Twitter-style text."
+        },
+        "architectural_root_cause": "Twitter abbreviations and spelling errors reduce TF-IDF overlap.",
+        "hypothesis": "Noisy customer messages may reduce intent classification and retrieval quality.",
+        "proposed_fix": "Add domain-specific normalization, spelling correction, or subword/embedding-based representations."
       },
       {
         "failure_id": "FAIL_005",
-        "failure_name": "Insufficient Context in Single-Word Tweets",
-        "frequency": "11.4% of evaluated error cases",
-        "real_example": "@AmazonHelp help me",
-        "expected_result": "Promptly escalate or ask customer for order ID details.",
-        "actual_result": "Escalated with reason code 'INSUFFICIENT_CONTEXT'.",
-        "likely_root_cause": "Single-turn tweets lack specific issue text or order numbers.",
-        "proposed_fix": "Maintain explicit automated follow-up prompt requesting order details before escalating."
+        "failure_name": "Insufficient Context Without Clarification Turn",
+        "source": "ILLUSTRATIVE_HYPOTHESIS \u2014 see also measured INSUFFICIENT_CONTEXT_ESCALATION",
+        "measurement_status": "hypothesis",
+        "frequency": "NOT MEASURED as a clarification-turn experiment",
+        "illustrative_example": {
+          "customer_message": "@AmazonHelp help me",
+          "escalation_reason": "INSUFFICIENT_CONTEXT",
+          "note": "The current policy intentionally escalates messages that do not contain enough information for safe automation."
+        },
+        "architectural_root_cause": "No automatic clarification turn exists before escalation.",
+        "hypothesis": "A safe clarification question could convert some insufficient-context escalations into auto-handleable cases.",
+        "proposed_fix": "Implement multi-turn context accumulation with a clarification question before permanent escalation."
       }
-    ]
+    ],
+    "measurement_notes": {
+      "intent_reference": "HEURISTIC_NOT_HUMAN \u2014 intent mismatches are not proof of human-labelled classification errors.",
+      "escalation_vs_failure": "Expected safety escalations (LOW_INTENT_CONFIDENCE, INSUFFICIENT_CONTEXT, SENSITIVE_REQUEST, ACCOUNT_SPECIFIC_ACTION) are policy behaviour, not automatically model failures.",
+      "prioritization": "Escalation reason codes take priority over raw similarity so LOW_INTENT_CONFIDENCE / INSUFFICIENT_CONTEXT are not mislabelled as LOW_RETRIEVAL_SIMILARITY.",
+      "retrieval_metric": "LOW_RETRIEVAL_SIMILARITY is threshold-/reason-based; it does not prove human irrelevance.",
+      "frequencies": "observed_count values are measured on results/pipeline_test_outputs.jsonl only. Hypothesis frequencies are NOT invented."
+    }
   }
 }

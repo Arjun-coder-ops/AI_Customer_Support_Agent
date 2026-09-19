@@ -1,4 +1,7 @@
 {
+  "dataset_status": "CURATED SAFETY SUITE \u2014 8 hand-crafted policy test cases",
+  "benchmark_type": "POLICY_SAFETY_TEST",
+  "benchmark_caveat": "This evaluation uses 8 CURATED test cases designed to exercise specific escalation triggers \u2014 NOT real customer traffic samples. false_auto_handling_rate=0.0 means 0/3 false auto-handles among the 3 designed-safe cases in this suite. This CANNOT be extrapolated to a real-world false auto-handling rate without a large annotated escalation benchmark drawn from actual traffic.",
   "total_test_cases": 8,
   "correct_auto_handle": 3,
   "incorrect_auto_handle_false_negative": 0,
