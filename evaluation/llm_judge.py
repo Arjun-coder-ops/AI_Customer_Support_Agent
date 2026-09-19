@@ -2,30 +2,21 @@ import os
 import json
 import logging
 import numpy as np
-from typing import Dict, Any, List
+from typing import Dict, Any, List, Optional
 from pydantic import BaseModel, Field
 
 logger = logging.getLogger(__name__)
 
 # ---------------------------------------------------------------------------
-# ISSUE 7 FIX — LLM Judge evaluation framing
+# LLM Judge evaluation framing
 # ---------------------------------------------------------------------------
-# The run_judge_evaluations() function below tests whether the judge CAN
-# DISCRIMINATE between good, acceptable, hallucinated, and poor replies.
+# run_judge_evaluations() tests whether the judge CAN DISCRIMINATE between
+# good, acceptable, hallucinated, and poor replies.
 # It is a JUDGE DISCRIMINATION TEST — it does NOT measure real agent output
 # quality on held-out data.
 #
-# The mean score of 8.0/10 across 4 discrimination test cases is NOT evidence
-# that the actual support agent produces 8/10 replies. It is evidence that
-# the judge assigns lower scores to hallucinated and poor replies. That is
-# what this test is designed to verify.
-#
-# To measure actual agent quality, you would need to:
-# 1. Run the full pipeline on test.jsonl queries
-# 2. Judge each generated reply
-# 3. Report the mean score across those real pipeline outputs
-#
-# That measurement is NOT implemented here and is marked as NOT YET MEASURED.
+# The mean score across 4 discrimination test cases is NOT evidence that the
+# actual support agent produces that average quality.
 # ---------------------------------------------------------------------------
 
 
@@ -42,14 +33,21 @@ class JudgeRubricScore(BaseModel):
 class LLMJudgeEvaluator:
     """
     LLM-as-a-Judge evaluator assessing generated support replies across 5 criteria.
-    Falls back to structured heuristic judge when offline or MOCK_LLM=true.
+
+    Modes:
+    - MOCK_LLM=true  -> deterministic heuristic judge
+    - MOCK_LLM=false + GEMINI_API_KEY -> Gemini judge
+
+    OpenAI is intentionally not supported.
     """
-    def __init__(self, use_mock: bool = None):
+
+    def __init__(self, use_mock: Optional[bool] = None):
+        self.gemini_key = os.getenv("GEMINI_API_KEY")
         if use_mock is not None:
             self.use_mock = use_mock
         else:
             mock_env = os.getenv("MOCK_LLM", "false").lower()
-            self.use_mock = mock_env in ("true", "1", "yes") or not (os.getenv("GEMINI_API_KEY") or os.getenv("OPENAI_API_KEY"))
+            self.use_mock = mock_env in ("true", "1", "yes") or not self.gemini_key
 
     def evaluate_reply(
         self,
@@ -58,17 +56,21 @@ class LLMJudgeEvaluator:
         generated_reply: str,
         predicted_intent: str,
     ) -> Dict[str, Any]:
-        """
-        Judge generated response on 0-10 multi-criteria scale.
-        """
+        """Judge generated response on a 0-10 multi-criteria scale."""
         if self.use_mock:
-            return self._heuristic_judge(customer_message, retrieved_evidence, generated_reply, predicted_intent)
+            return self._heuristic_judge(
+                customer_message, retrieved_evidence, generated_reply, predicted_intent
+            )
 
         try:
-            return self._llm_judge(customer_message, retrieved_evidence, generated_reply, predicted_intent)
+            return self._llm_judge(
+                customer_message, retrieved_evidence, generated_reply, predicted_intent
+            )
         except Exception as e:
-            logger.error(f"LLM Judge API failed: {e}. Using heuristic judge fallback.")
-            return self._heuristic_judge(customer_message, retrieved_evidence, generated_reply, predicted_intent)
+            logger.error("Gemini judge failed: %s. Using heuristic judge fallback.", e)
+            return self._heuristic_judge(
+                customer_message, retrieved_evidence, generated_reply, predicted_intent
+            )
 
     def _heuristic_judge(
         self,
@@ -84,12 +86,33 @@ class LLMJudgeEvaluator:
             corr = 0
 
         ground = 2
-        if not retrieved_evidence and not any(k in reply_lower for k in ["escalat", "dm", "support"]):
+        if not retrieved_evidence and not any(
+            k in reply_lower for k in ["escalat", "dm", "support"]
+        ):
             ground = 0
-        elif any(k in reply_lower for k in ["100% refund", "$500 gift card", "guarantee tomorrow"]):
+        elif any(
+            k in reply_lower
+            for k in ["100% refund", "$500 gift card", "guarantee tomorrow"]
+        ):
             ground = 0
 
-        rel = 2 if any(w in reply_lower for w in ["order", "delay", "return", "refund", "assist", "help", "escalat", "tracking"]) else 1
+        rel = (
+            2
+            if any(
+                w in reply_lower
+                for w in [
+                    "order",
+                    "delay",
+                    "return",
+                    "refund",
+                    "assist",
+                    "help",
+                    "escalat",
+                    "tracking",
+                ]
+            )
+            else 1
+        )
         if "irrelevant" in reply_lower:
             rel = 0
 
@@ -110,7 +133,11 @@ class LLMJudgeEvaluator:
             "completeness": comp,
             "professionalism": prof,
             "total_score": total,
-            "reasoning": f"Groundedness={ground}, Relevance={rel}, Completeness={comp}, Professionalism={prof}",
+            "reasoning": (
+                f"Groundedness={ground}, Relevance={rel}, "
+                f"Completeness={comp}, Professionalism={prof}"
+            ),
+            "judge_mode": "MOCK_HEURISTIC",
         }
 
     def _llm_judge(
@@ -120,6 +147,12 @@ class LLMJudgeEvaluator:
         generated_reply: str,
         predicted_intent: str,
     ) -> Dict[str, Any]:
+        if not self.gemini_key:
+            raise ValueError(
+                "GEMINI_API_KEY is required when MOCK_LLM is false. "
+                "Set MOCK_LLM=true for offline evaluation."
+            )
+
         prompt = f"""
 You are an expert AI evaluator judging a customer support reply.
 Customer Message: "{customer_message}"
@@ -134,34 +167,24 @@ Evaluate across 5 criteria (Score 0=Poor, 1=Acceptable, 2=Excellent for each):
 4. Completeness (0-2)
 5. Professionalism (0-2)
 
-Return JSON format with total_score (sum 0-10) and reasoning.
+Return JSON with keys:
+correctness, groundedness, relevance, completeness, professionalism,
+total_score (sum 0-10), reasoning.
 """
-        gemini_key = os.getenv("GEMINI_API_KEY")
-        openai_key = os.getenv("OPENAI_API_KEY")
+        import google.generativeai as genai
 
-        if gemini_key:
-            import google.generativeai as genai
-            genai.configure(api_key=gemini_key)
-            model = genai.GenerativeModel("gemini-1.5-flash")
-            resp = model.generate_content(prompt)
-            raw = resp.text
-        elif openai_key:
-            import openai
-            client = openai.OpenAI(api_key=openai_key)
-            resp = client.chat.completions.create(
-                model="gpt-3.5-turbo",
-                messages=[{"role": "user", "content": prompt}],
-                temperature=0.0,
-            )
-            raw = resp.choices[0].message.content
-        else:
-            raise ValueError("No LLM key available.")
+        genai.configure(api_key=self.gemini_key)
+        model = genai.GenerativeModel("gemini-1.5-flash")
+        resp = model.generate_content(prompt)
+        raw = resp.text
 
         clean_str = raw.strip()
         if clean_str.startswith("```"):
             clean_str = "\n".join(clean_str.splitlines()[1:-1]).strip()
 
-        return json.loads(clean_str)
+        data = json.loads(clean_str)
+        data["judge_mode"] = "GEMINI"
+        return data
 
 
 def run_judge_evaluations() -> Dict[str, Any]:
@@ -170,25 +193,23 @@ def run_judge_evaluations() -> Dict[str, Any]:
     4 controlled replies (Good, Acceptable, Hallucinated, Poor).
 
     IMPORTANT: This is NOT a measure of actual agent reply quality.
-    The mean score from these 4 controlled cases MUST NOT be reported as
-    "Agent Reply Quality = X/10". It only validates judge discrimination ability.
-
-    Actual agent output quality is NOT YET MEASURED — it requires running the
-    full pipeline on real test queries and judging the outputs.
     """
-    logger.info("Executing LLM Judge Discrimination Test (4 controlled quality cases)...")
+    logger.info(
+        "Executing LLM Judge Discrimination Test (4 controlled quality cases)..."
+    )
     os.makedirs("results", exist_ok=True)
 
     judge = LLMJudgeEvaluator()
 
-    # 4 controlled test cases spanning quality levels
-    # These are DESIGNED to test judge discrimination, not real pipeline outputs.
     discrimination_cases = [
         {
             "customer_message": "Where is my delayed order #12345?",
             "predicted_intent": "shipping_delay",
             "evidence": [{"case_id": "c101", "similarity": 0.85}],
-            "reply": "Hello! We apologize for the delay. Your order tracking has been updated and is out for delivery today.",
+            "reply": (
+                "Hello! We apologize for the delay. Your order tracking has "
+                "been updated and is out for delivery today."
+            ),
             "type": "GOOD_REPLY",
             "expected_score_range": "9-10",
         },
@@ -196,7 +217,10 @@ def run_judge_evaluations() -> Dict[str, Any]:
             "customer_message": "Missing item from my delivered parcel box.",
             "predicted_intent": "missing_item",
             "evidence": [{"case_id": "c102", "similarity": 0.80}],
-            "reply": "We apologize for the missing item. Please DM us your order ID so we can issue a replacement.",
+            "reply": (
+                "We apologize for the missing item. Please DM us your order "
+                "ID so we can issue a replacement."
+            ),
             "type": "ACCEPTABLE_REPLY",
             "expected_score_range": "7-8",
         },
@@ -204,7 +228,10 @@ def run_judge_evaluations() -> Dict[str, Any]:
             "customer_message": "I want a refund for my item.",
             "predicted_intent": "refund_return_request",
             "evidence": [],
-            "reply": "We guarantee a 100% refund of $500 gift card immediately without returning the item!",
+            "reply": (
+                "We guarantee a 100% refund of $500 gift card immediately "
+                "without returning the item!"
+            ),
             "type": "HALLUCINATED_REPLY",
             "expected_score_range": "3-5",
         },
@@ -236,19 +263,23 @@ def run_judge_evaluations() -> Dict[str, Any]:
     avg_relevance = float(np.mean([s["relevance"] for s in scores]))
 
     output = {
-        # --- ISSUE 14 compliance: explicit dataset/benchmark status ---
         "evaluation_type": "JUDGE_DISCRIMINATION_TEST",
-        "dataset_status": "SYNTHETIC/CONTROLLED TEST — 4 hand-crafted cases spanning quality spectrum",
+        "dataset_status": (
+            "SYNTHETIC/CONTROLLED TEST — 4 hand-crafted cases spanning "
+            "quality spectrum"
+        ),
         "benchmark_caveat": (
-            "This test verifies the judge's ability to discriminate between Good, Acceptable, "
-            "Hallucinated, and Poor replies. The mean_total_score reflects the AVERAGE across "
-            "these 4 controlled cases — it is NOT a measure of actual agent reply quality. "
+            "This test verifies the judge's ability to discriminate between "
+            "Good, Acceptable, Hallucinated, and Poor replies. The "
+            "mean_total_score reflects the AVERAGE across these 4 controlled "
+            "cases — it is NOT a measure of actual agent reply quality. "
             "Do NOT report this as 'Agent Reply Quality = X/10'. "
             "Actual pipeline output quality is NOT YET MEASURED."
         ),
-        "actual_agent_quality": "NOT YET MEASURED — requires full pipeline evaluation on test.jsonl",
-
-        # --- Discrimination test results ---
+        "actual_agent_quality": (
+            "NOT YET MEASURED — requires judging real pipeline outputs "
+            "and human ratings"
+        ),
         "discrimination_test_case_count": len(scores),
         "discrimination_test_mean_score": round(avg_total, 2),
         "mean_correctness": round(avg_correctness, 2),
@@ -261,14 +292,19 @@ def run_judge_evaluations() -> Dict[str, Any]:
         json.dump(output, f, indent=2)
 
     logger.info(
-        f"LLM Judge Discrimination Test complete: Mean={avg_total}/10 across {len(scores)} controlled cases. "
-        "NOTE: This is a judge calibration test, NOT real pipeline quality measurement."
+        "LLM Judge Discrimination Test complete: Mean=%s/10 across %s "
+        "controlled cases. NOTE: judge calibration test, NOT real pipeline "
+        "quality measurement.",
+        avg_total,
+        len(scores),
     )
     return output
 
 
 if __name__ == "__main__":
-    import sys
-    logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
+    logging.basicConfig(
+        level=logging.INFO,
+        format="%(asctime)s - %(levelname)s - %(message)s",
+    )
     res = run_judge_evaluations()
     print(json.dumps(res, indent=2))
