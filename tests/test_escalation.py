@@ -23,6 +23,33 @@ def test_escalation_low_confidence():
     assert res["decision"] == "ESCALATE"
     assert res["reason_code"] == "LOW_INTENT_CONFIDENCE"
 
+def test_escalation_ssn_not_matched_inside_words():
+    """'ssn' must not match inside unrelated words like 'grossness'."""
+    engine = EscalationPolicyEngine()
+    res = engine.evaluate(
+        customer_message=(
+            "When u get shakes and they do not expire but u get chunky "
+            "grossness instead of a drink disgusting product"
+        ),
+        predicted_intent="product_defect_damage",
+        intent_confidence=0.95,
+        evidence_cases=[{"case_id": "c1", "similarity": 0.80}],
+    )
+    assert res["reason_code"] != "ACCOUNT_SPECIFIC_ACTION_REQUIRED"
+
+
+def test_escalation_ssn_whole_word_still_triggers():
+    engine = EscalationPolicyEngine()
+    res = engine.evaluate(
+        customer_message="I need to update my SSN on the account profile page",
+        predicted_intent="account_access_issue",
+        intent_confidence=0.95,
+        evidence_cases=[{"case_id": "c1", "similarity": 0.80}],
+    )
+    assert res["decision"] == "ESCALATE"
+    assert res["reason_code"] == "ACCOUNT_SPECIFIC_ACTION_REQUIRED"
+
+
 def test_escalation_safe_auto_handle():
     engine = EscalationPolicyEngine(min_intent_confidence=0.70, min_retrieval_similarity=0.65)
     res = engine.evaluate(
