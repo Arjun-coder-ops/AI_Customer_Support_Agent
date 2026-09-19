@@ -85,9 +85,12 @@ def _load_human_golden_labels(golden_path: str) -> tuple:
             continue
         item = json.loads(line)
         msg = item.get("customer_message")
-        intent = item.get("intent")
         is_human = item.get("is_human_reviewed", False)
-        if msg and intent and is_human:
+        # Prefer explicit human_verified_intent; never treat heuristic seeds as human.
+        intent = item.get("human_verified_intent") or (
+            item.get("intent") if is_human else None
+        )
+        if msg and intent and is_human is True:
             X_test.append(msg)
             y_test.append(intent)
 
@@ -154,30 +157,26 @@ def run_intent_evaluations(
                 X_test_heuristic.append(msg)
                 y_test_heuristic.append(map_text_to_heuristic_intent(msg))
 
-    # Check for human golden labels (Mode B)
+    # Human golden labels (SEPARATE evaluation track — never mixed into heuristic metrics)
     X_golden, y_golden, n_human_reviewed = _load_human_golden_labels(golden_path)
     golden_benchmark_status = (
         f"BLOCKED — REQUIRES HUMAN INPUT: Only {n_human_reviewed} human-reviewed examples exist "
-        f"(need 150–250). Evaluating on heuristic test split instead."
+        f"(need 150–250)."
         if n_human_reviewed < 150
         else f"ACTIVE — {n_human_reviewed} human-reviewed examples available."
     )
 
-    # Choose evaluation set
-    if n_human_reviewed >= 10:
-        # Use human labels where available (partial golden evaluation)
-        X_eval, y_eval = X_golden, y_golden
-        eval_source = f"PARTIAL_HUMAN_GOLDEN_SET ({n_human_reviewed} human-reviewed examples)"
-        eval_label_type = "HUMAN_LABELLED"
-    else:
-        # Fall back to heuristic test split
-        X_eval, y_eval = X_test_heuristic, y_test_heuristic
-        eval_source = f"REAL_DATASET_TEST_SPLIT (data/processed/test.jsonl, {len(X_eval)} conversations)"
-        eval_label_type = "HEURISTIC — keyword rules, NOT human-labelled"
+    # Primary evaluation is ALWAYS the heuristic held-out test split.
+    # Human-golden evaluation is reported separately and never silently replaces it.
+    X_eval, y_eval = X_test_heuristic, y_test_heuristic
+    eval_source = (
+        f"REAL_DATASET_TEST_SPLIT (data/processed/test.jsonl, {len(X_eval)} conversations)"
+    )
+    eval_label_type = "HEURISTIC — keyword rules, NOT human-labelled"
 
     if not X_eval:
         logger.error(
-            "No evaluation data available (neither test split nor human golden set). "
+            "No evaluation data available on the held-out test split. "
             "Returning BLOCKED status."
         )
         blocked_output = {
@@ -185,30 +184,28 @@ def run_intent_evaluations(
             "golden_benchmark_status": golden_benchmark_status,
             "eval_source": eval_source,
             "eval_label_type": eval_label_type,
+            "human_golden_evaluation": {
+                "status": golden_benchmark_status,
+                "human_reviewed_count": n_human_reviewed,
+            },
         }
         with open("results/intent_results.json", "w", encoding="utf-8") as f:
             json.dump(blocked_output, f, indent=2)
         return blocked_output
 
     # -----------------------------------------------------------------------
-    # 1. Majority Baseline
+    # Fit once on train; evaluate all models on the SAME heuristic test split
     # -----------------------------------------------------------------------
     maj_clf = MajorityBaselineClassifier()
     maj_clf.fit(y_train)
     maj_preds = maj_clf.predict(X_eval)
     maj_metrics = maj_clf.evaluate(y_eval, maj_preds)
 
-    # -----------------------------------------------------------------------
-    # 2. TF-IDF + Logistic Regression Baseline
-    # -----------------------------------------------------------------------
     tfidf_clf = TFIDFLogisticRegressionBaseline()
     tfidf_clf.fit(X_train, y_train)
     tfidf_preds = tfidf_clf.predict(X_eval)
     tfidf_metrics = tfidf_clf.evaluate(y_eval, tfidf_preds)
 
-    # -----------------------------------------------------------------------
-    # 3. Final Intent Classifier
-    # -----------------------------------------------------------------------
     final_clf = FinalIntentClassifier()
     final_clf.fit(X_train, y_train)
     final_pred_objs = final_clf.predict_batch(X_eval)
@@ -217,13 +214,53 @@ def run_intent_evaluations(
     final_metrics["model"] = "FinalIntentClassifier"
 
     # -----------------------------------------------------------------------
-    # Build outputs with explicit dataset status labels
+    # Separate human-golden evaluation (only if human-reviewed labels exist)
     # -----------------------------------------------------------------------
+    human_golden_evaluation: Dict[str, Any]
+    if n_human_reviewed >= 150:
+        maj_g = maj_clf.evaluate(y_golden, maj_clf.predict(X_golden))
+        tfidf_g = tfidf_clf.evaluate(y_golden, tfidf_clf.predict(X_golden))
+        final_g_preds = [
+            p["predicted_intent"] for p in final_clf.predict_batch(X_golden)
+        ]
+        final_g = tfidf_clf.evaluate(y_golden, final_g_preds)
+        final_g["model"] = "FinalIntentClassifier"
+        human_golden_evaluation = {
+            "status": "COMPLETED",
+            "dataset_status": (
+                f"HUMAN_GOLDEN_SET ({n_human_reviewed} human-reviewed examples)"
+            ),
+            "label_type": "HUMAN_LABELLED",
+            "eval_sample_count": n_human_reviewed,
+            "majority": maj_g,
+            "tfidf_logreg": tfidf_g,
+            "final_classifier": final_g,
+            "note": (
+                "This is a SEPARATE evaluation track from heuristic test-split "
+                "metrics. Do not mix the two."
+            ),
+        }
+    elif n_human_reviewed > 0:
+        human_golden_evaluation = {
+            "status": (
+                f"PARTIAL — {n_human_reviewed} human-reviewed examples exist "
+                f"(<{150} required). Metrics withheld until minimum is met."
+            ),
+            "human_reviewed_count": n_human_reviewed,
+            "label_type": "HUMAN_LABELLED (insufficient count)",
+        }
+    else:
+        human_golden_evaluation = {
+            "status": golden_benchmark_status,
+            "human_reviewed_count": 0,
+            "label_type": "NONE — no human-reviewed golden labels",
+        }
+
     dataset_caveat = (
         "IMPORTANT: Labels are generated by the SAME heuristic keyword rules used to "
         "assign training labels. High accuracy indicates the classifier learns the heuristic, "
         "NOT that it generalises to human-judged intent. A gold benchmark requires human labels. "
-        "See golden_benchmark_status for when this will be available."
+        "See human_golden_evaluation for the separate human track."
     )
 
     baselines_output = {
@@ -234,6 +271,7 @@ def run_intent_evaluations(
         "golden_benchmark_status": golden_benchmark_status,
         "majority_baseline": maj_metrics,
         "tfidf_logreg_baseline": tfidf_metrics,
+        "human_golden_evaluation": human_golden_evaluation,
     }
     with open("results/intent_baselines.json", "w", encoding="utf-8") as f:
         json.dump(baselines_output, f, indent=2)
@@ -245,15 +283,16 @@ def run_intent_evaluations(
         "dataset_caveat": dataset_caveat,
         "golden_benchmark_status": golden_benchmark_status,
         "final_intent_classifier": final_metrics,
+        "human_golden_evaluation": human_golden_evaluation,
     }
     with open("results/intent_results.json", "w", encoding="utf-8") as f:
         json.dump(results_output, f, indent=2)
 
     logger.info(
-        f"Intent evaluation complete. "
-        f"Eval source: {eval_source}. "
-        f"Label type: {eval_label_type}. "
-        f"Samples: {len(X_eval)}."
+        "Intent evaluation complete. Eval source: %s. Label type: %s. Samples: %s.",
+        eval_source,
+        eval_label_type,
+        len(X_eval),
     )
     return {
         "dataset_status": eval_source,
@@ -263,6 +302,7 @@ def run_intent_evaluations(
         "majority": maj_metrics,
         "tfidf_logreg": tfidf_metrics,
         "final_classifier": final_metrics,
+        "human_golden_evaluation": human_golden_evaluation,
     }
 
 
