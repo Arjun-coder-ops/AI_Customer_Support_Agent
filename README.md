@@ -392,3 +392,44 @@ See [`docs/DECISION_LOG.md`](docs/DECISION_LOG.md) (15 engineering decisions act
 3. Google — Gemini API (`google-generativeai`) for structured generation/judging.
 4. Pydantic — structured output validation.
 5. Hiver SDE Intern take-home assignment brief (problem requirements).
+
+
+## Z. Deployment
+
+The project is designed for a split-stack deployment:
+- **Backend/API (Render)**: FastAPI serving the pipeline, intent classifier, and LLM generator.
+- **Frontend/Client (Vercel)**: Static HTML/JS application interacting with the backend.
+
+### 1. Backend Deployment (Render)
+1. Log into your [Render dashboard](https://dashboard.render.com).
+2. Click **New +** -> **Web Service**.
+3. Connect your GitHub repository.
+4. Render will automatically detect the 
+ender.yaml configuration in the root directory.
+5. In the Render dashboard, go to the environment variables for your new service and add:
+   - GEMINI_API_KEY: Your real Gemini API key (do NOT commit this to GitHub).
+   - FRONTEND_URL: The URL of your Vercel deployment (e.g., https://your-frontend.vercel.app) to configure CORS safely.
+   - MOCK_LLM: Set to alse in production to enable real LLM generation.
+6. Click **Deploy**. Note your Render service URL (e.g., https://ai-support-api.onrender.com).
+
+### 2. Frontend Deployment (Vercel)
+1. Edit ercel.json in the root of the repository. Update the destination field in the /api/(.*) rewrite to match your exact Render URL from Step 1.
+2. Log into your [Vercel dashboard](https://vercel.com).
+3. Click **Add New** -> **Project**.
+4. Import your GitHub repository.
+5. The default settings (Static site) are correct. Vercel will automatically use ercel.json to proxy API requests to your Render backend.
+6. Click **Deploy**.
+
+### Local Development
+To run the full stack locally:
+1. Ensure your .env file is set up (see .env.example).
+2. Start the API backend:
+   `ash
+   uvicorn api:app --reload --port 8000
+   `
+3. In a new terminal, serve the frontend locally (e.g., using Python's http.server):
+   `ash
+   python -m http.server 3000 --directory frontend
+   `
+4. Access the frontend at http://localhost:3000. Be sure to update API_URL in rontend/index.html to http://localhost:8000/api/chat temporarily while testing locally (do not commit this change).
+

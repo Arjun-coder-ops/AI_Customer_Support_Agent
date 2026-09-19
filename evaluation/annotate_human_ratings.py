@@ -249,9 +249,9 @@ def print_status(progress: Dict, examples: List):
     print(f"  Remaining      : {remaining}")
     print(f"  Required min   : {MIN_RATINGS}")
     if len(rated) >= MIN_RATINGS:
-        print("  ✅ MINIMUM REACHED — run `python -m evaluation.human_judge_agreement` to compute agreement.")
+        print("  [OK] MINIMUM REACHED — run `python -m evaluation.human_judge_agreement` to compute agreement.")
     else:
-        print(f"  ⏳ Need {MIN_RATINGS - len(rated)} more ratings.")
+        print(f"  [WAIT] Need {MIN_RATINGS - len(rated)} more ratings.")
     print("=" * 70)
     print()
 
@@ -390,7 +390,7 @@ def main():
     print_status(progress, examples)
 
     if len(rated_ids) >= MIN_RATINGS:
-        print("  ✅ You now have enough ratings to compute Human/LLM agreement.")
+        print("  [OK] You now have enough ratings to compute Human/LLM agreement.")
         print("  Run:")
         print("    python -m evaluation.human_judge_agreement")
         print()

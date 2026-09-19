@@ -197,10 +197,10 @@ def print_status(progress: Dict[str, Any], candidates: List):
     print(f"  Required minimum      : 150 reviewed (not skipped)")
     print()
     if len(reviewed) >= 150:
-        print("  ✅ GOLDEN SET READY — you have 150+ labelled examples.")
+        print("  [OK] GOLDEN SET READY — you have 150+ labelled examples.")
         print("     Run `python -m evaluation.run_all` to unlock gold metrics.")
     else:
-        print(f"  ⏳ Need {150 - len(reviewed)} more labels to reach minimum.")
+        print(f"  [WAIT] Need {150 - len(reviewed)} more labels to reach minimum.")
     print("=" * 70)
     print()
 
