@@ -43,26 +43,29 @@ async def lifespan(app: FastAPI):
 
     if os.path.exists(train_path):
         train_cases = []
+        retrieval_cases = []
         with open(train_path, "r", encoding="utf-8") as f:
             for line in f:
                 if line.strip():
-                    train_cases.append(json.loads(line))
-        
-        # Convert schema for retrieval index
-        retrieval_cases = []
-        for case in train_cases:
-            if "customer_initial_message" in case:
-                retrieval_cases.append({
-                    "case_id": case.get("conversation_id"),
-                    "conversation_id": case.get("conversation_id"),
-                    "customer_message": case.get("customer_initial_message", ""),
-                    "historical_response": case.get("support_final_response", ""),
-                    "turn_count": case.get("turn_count", 1),
-                })
+                    case = json.loads(line)
+                    if "customer_initial_message" in case:
+                        # Extract ONLY what is needed for Intent Classifier
+                        train_cases.append({
+                            "customer_initial_message": case["customer_initial_message"]
+                        })
+                        
+                        # Extract ONLY what is needed for Retrieval Index
+                        retrieval_cases.append({
+                            "case_id": case.get("conversation_id"),
+                            "conversation_id": case.get("conversation_id"),
+                            "customer_message": case["customer_initial_message"],
+                            "historical_response": case.get("support_final_response", ""),
+                            "turn_count": case.get("turn_count", 1),
+                        })
                 
         logger.info(f"Loaded {len(train_cases)} cases. Starting background training task...")
         # Train in a background thread to prevent Uvicorn from blocking startup and failing Render health checks
-        loop = asyncio.get_event_loop()
+        loop = asyncio.get_running_loop()
         loop.run_in_executor(None, background_train, train_cases, retrieval_cases)
     else:
         logger.warning(f"Training data not found at {train_path}. Operating untrained (mock mode fallback).")
