@@ -1,0 +1,24 @@
+{
+  "rated_by": "arjun",
+  "rating_date": "2026-09-19",
+  "rubric": "0–10 total: correctness+groundedness+relevance+completeness+professionalism (each 0–2)",
+  "examples": [
+    {
+      "example_id": "agr_001",
+      "customer_message": "Thanks @115817 for leaving a $350 package unprotected in the rain. 😡 @115821",
+      "generated_reply": "[MOCK] We have escalated your inquiry regarding 'general inquiry feedback' to a customer specialist for manual review. (Reason: NO_RELEVANT_HISTORICAL_EVIDENCE)",
+      "predicted_intent": "general_inquiry_feedback",
+      "escalation_decision": null,
+      "reviewer": "arjun",
+      "review_date": "2026-09-19",
+      "correctness": 1,
+      "groundedness": 2,
+      "relevance": 1,
+      "completeness": 1,
+      "professionalism": 2,
+      "human_total_score": 7,
+      "llm_total_score": null,
+      "notes": ""
+    }
+  ]
+}

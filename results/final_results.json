@@ -30,7 +30,7 @@
     "dataset_status": "REAL_DATASET_TEST_SPLIT (data/processed/test.jsonl, 8250 conversations)",
     "label_type": "HEURISTIC \u2014 keyword rules, NOT human-labelled",
     "eval_sample_count": 8250,
-    "golden_benchmark_status": "BLOCKED \u2014 REQUIRES HUMAN INPUT: Only 0 human-reviewed examples exist (need 150\u2013250).",
+    "golden_benchmark_status": "BLOCKED \u2014 REQUIRES HUMAN INPUT: Only 3 human-reviewed examples exist (need 150\u2013250).",
     "majority": {
       "model": "MajorityBaseline",
       "accuracy": 0.748,
@@ -42,16 +42,16 @@
     },
     "tfidf_logreg": {
       "model": "TFIDF_LogisticRegression",
-      "accuracy": 0.9445,
-      "macro_precision": 0.9394,
-      "macro_recall": 0.8298,
-      "macro_f1": 0.8792,
-      "weighted_f1": 0.9417,
+      "accuracy": 0.9447,
+      "macro_precision": 0.9395,
+      "macro_recall": 0.8304,
+      "macro_f1": 0.8796,
+      "weighted_f1": 0.9419,
       "per_class_metrics": {
         "account_access_issue": {
-          "precision": 0.9236363636363636,
-          "recall": 0.8494983277591973,
-          "f1-score": 0.8850174216027874,
+          "precision": 0.9309090909090909,
+          "recall": 0.8561872909698997,
+          "f1-score": 0.89198606271777,
           "support": 299.0
         },
         "general_inquiry_feedback": {
@@ -67,68 +67,68 @@
           "support": 56.0
         },
         "order_cancellation": {
-          "precision": 0.9548872180451128,
-          "recall": 0.8220064724919094,
-          "f1-score": 0.8834782608695653,
+          "precision": 0.9552238805970149,
+          "recall": 0.8284789644012945,
+          "f1-score": 0.8873483535528596,
           "support": 309.0
         },
         "payment_billing_issue": {
-          "precision": 0.9274193548387096,
-          "recall": 0.8098591549295775,
-          "f1-score": 0.8646616541353384,
+          "precision": 0.9206349206349206,
+          "recall": 0.8169014084507042,
+          "f1-score": 0.8656716417910447,
           "support": 142.0
         },
         "product_defect_damage": {
-          "precision": 0.868421052631579,
-          "recall": 0.8048780487804879,
-          "f1-score": 0.8354430379746836,
+          "precision": 0.8666666666666667,
+          "recall": 0.7926829268292683,
+          "f1-score": 0.8280254777070064,
           "support": 82.0
         },
         "refund_return_request": {
-          "precision": 0.919661733615222,
-          "recall": 0.6915739268680445,
-          "f1-score": 0.7894736842105263,
+          "precision": 0.921443736730361,
+          "recall": 0.6899841017488076,
+          "f1-score": 0.7890909090909091,
           "support": 629.0
         },
         "shipping_delay": {
-          "precision": 0.9977924944812362,
-          "recall": 0.8042704626334519,
-          "f1-score": 0.8906403940886699,
+          "precision": 0.9977876106194691,
+          "recall": 0.802491103202847,
+          "f1-score": 0.8895463510848126,
           "support": 562.0
         },
-        "accuracy": 0.9444848484848485,
+        "accuracy": 0.9447272727272727,
         "macro avg": {
-          "precision": 0.9394244202005735,
-          "recall": 0.8298428882167942,
-          "f1-score": 0.8792445604472683,
+          "precision": 0.9395303813142359,
+          "recall": 0.8304228134843133,
+          "f1-score": 0.8796138533301223,
           "support": 8250.0
         },
         "weighted avg": {
-          "precision": 0.9446725559198793,
-          "recall": 0.9444848484848485,
-          "f1-score": 0.9416961882529397,
+          "precision": 0.944950066235774,
+          "recall": 0.9447272727272727,
+          "f1-score": 0.9419336480007302,
           "support": 8250.0
         }
       }
     },
     "final_classifier": {
       "model": "FinalIntentClassifier",
-      "accuracy": 0.9509,
-      "macro_precision": 0.9327,
-      "macro_recall": 0.8676,
-      "macro_f1": 0.8966,
-      "weighted_f1": 0.9486,
+      "accuracy": 0.9505,
+      "macro_precision": 0.9325,
+      "macro_recall": 0.866,
+      "macro_f1": 0.8957,
+      "weighted_f1": 0.9482,
       "per_class_metrics": {
         "account_access_issue": {
-          "precision": 0.9230769230769231,
-          "recall": 0.882943143812709,
-          "f1-score": 0.9025641025641026,
+          "precision": 0.9225352112676056,
+          "recall": 0.8762541806020067,
+          "f1-score": 0.8987993138936535,
           "support": 299.0
         },
         "general_inquiry_feedback": {
-          "precision": 0.9528593508500772,
-          "recall": 0.9990277102576568,
-          "f1-score": 0.9753975160193022,
+          "precision": 0.9524250849552054,
+          "recall": 0.9991897585480474,
+          "f1-score": 0.9752471332542507,
           "support": 6171.0
         },
         "missing_item": {
@@ -138,9 +138,9 @@
           "support": 56.0
         },
         "order_cancellation": {
-          "precision": 0.9565217391304348,
-          "recall": 0.8543689320388349,
-          "f1-score": 0.9025641025641026,
+          "precision": 0.9562043795620438,
+          "recall": 0.8478964401294499,
+          "f1-score": 0.8987993138936535,
           "support": 309.0
         },
         "payment_billing_issue": {
@@ -156,36 +156,36 @@
           "support": 82.0
         },
         "refund_return_request": {
-          "precision": 0.9243697478991597,
+          "precision": 0.9224318658280922,
           "recall": 0.699523052464229,
-          "f1-score": 0.7963800904977375,
+          "f1-score": 0.7956600361663653,
           "support": 629.0
         },
         "shipping_delay": {
-          "precision": 0.9956896551724138,
+          "precision": 0.9978401727861771,
           "recall": 0.8220640569395018,
-          "f1-score": 0.9005847953216374,
+          "f1-score": 0.9014634146341464,
           "support": 562.0
         },
-        "accuracy": 0.9509090909090909,
+        "accuracy": 0.9505454545454546,
         "macro avg": {
-          "precision": 0.932655946857396,
-          "recall": 0.8676320198622651,
-          "f1-score": 0.8966178042019797,
+          "precision": 0.9325208591411603,
+          "recall": 0.866007094008553,
+          "f1-score": 0.8956776298113782,
           "support": 8250.0
         },
         "weighted avg": {
-          "precision": 0.9508673112741197,
-          "recall": 0.9509090909090909,
-          "f1-score": 0.9485999139000653,
+          "precision": 0.9505097079167087,
+          "recall": 0.9505454545454546,
+          "f1-score": 0.9482149279999963,
           "support": 8250.0
         }
       }
     },
     "human_golden_evaluation": {
-      "status": "BLOCKED \u2014 REQUIRES HUMAN INPUT: Only 0 human-reviewed examples exist (need 150\u2013250).",
-      "human_reviewed_count": 0,
-      "label_type": "NONE \u2014 no human-reviewed golden labels"
+      "status": "PARTIAL \u2014 3 human-reviewed examples exist (<150 required). Metrics withheld until minimum is met.",
+      "human_reviewed_count": 3,
+      "label_type": "HUMAN_LABELLED (insufficient count)"
     }
   },
   "historical_retrieval": {
@@ -199,15 +199,15 @@
     "leakage_status": "PASS \u2014 zero train/test conversation overlap in retrieval corpus",
     "evaluation_methodology": "Held-out test queries evaluated against a training-only retrieval index. Retrieval corpus = train.jsonl resolved conversations ONLY (not resolved_cases.jsonl which contains all splits). Relevance is approximated via heuristic intent matching \u2014 see metric_naming_note.",
     "metric_naming_note": "Metrics are named 'intent_match_at_k', NOT 'recall_at_k'. There is no ground-truth relevant document ID in this dataset. IntentMatch@K measures whether any of the top-K retrieved documents share the same heuristic keyword-intent as the query. This is a DIAGNOSTIC PROXY metric. The heuristic mapper is NOT a gold oracle \u2014 queries without explicit keywords default to 'general_inquiry_feedback', which can inflate IntentMatch scores.",
-    "intent_match_at_1": 0.7589,
-    "intent_match_at_3": 0.8753,
-    "intent_match_at_5": 0.9038,
-    "avg_top1_similarity": 0.4681,
+    "intent_match_at_1": 0.7582,
+    "intent_match_at_3": 0.8754,
+    "intent_match_at_5": 0.9047,
+    "avg_top1_similarity": 0.4682,
     "similarity_distribution": {
       "min": 0.0,
       "max": 1.0,
-      "mean": 0.4681,
-      "median": 0.443
+      "mean": 0.4682,
+      "median": 0.4429
     }
   },
   "escalation_policy": {
@@ -322,15 +322,20 @@
     ]
   },
   "human_llm_agreement": {
-    "status": "BLOCKED \u2014 REQUIRES HUMAN INPUT",
-    "is_human_evaluated": false,
-    "message": "Human rating file 'data/golden/human_ratings.json' is missing. Human evaluation must be provided by a human reviewer.",
-    "how_to_create": "HOW TO CREATE data/golden/human_ratings.json\n===========================================\n\n1. Select the SAME examples the judge will score.\n   Preferred source: data/golden/judge_agreement_examples.jsonl\n   (create with: python -m evaluation.human_judge_agreement --prepare-examples)\n\n   Each example must include:\n     - example_id\n     - customer_message\n     - generated_reply\n     - predicted_intent\n     - retrieved_evidence\n\n2. Rate each generated_reply on the same 0\u201310 total scale used by the LLM judge\n   (Correctness + Groundedness + Relevance + Completeness + Professionalism).\n\n3. Write data/golden/human_ratings.json with this schema:\n\n{\n  \"rated_by\": \"YOUR_NAME\",\n  \"rating_date\": \"YYYY-MM-DD\",\n  \"rubric\": \"0-10 total across correctness/groundedness/relevance/completeness/professionalism\",\n  \"examples\": [\n    {\n      \"example_id\": \"agr_001\",\n      \"customer_message\": \"...\",\n      \"generated_reply\": \"...\",\n      \"human_total_score\": 7,\n      \"llm_total_score\": null\n    }\n  ]\n}\n\nNotes:\n- llm_total_score may be null; the agreement script will fill it by\n  running the judge on the SAME generated_reply text.\n- Do NOT invent ratings.\n- Until this file exists with real human scores, agreement remains BLOCKED.",
-    "shared_examples_file": "data/golden/judge_agreement_examples.jsonl",
-    "human_mean_score": "NOT YET MEASURED",
-    "llm_judge_mean_score": "NOT YET MEASURED",
-    "pearson_correlation": "NOT YET MEASURED",
-    "quadratic_weighted_kappa": "NOT YET MEASURED"
+    "status": "COMPLETED",
+    "is_human_evaluated": true,
+    "sample_size": 1,
+    "evaluation_source": "data/golden/human_ratings.json",
+    "human_mean_score": 7.0,
+    "llm_judge_mean_score": 10.0,
+    "mean_absolute_difference": 3.0,
+    "exact_agreement_count": 0,
+    "exact_agreement_pct": 0.0,
+    "near_agreement_count_within_1pt": 0,
+    "near_agreement_pct": 0.0,
+    "pearson_correlation": "NOT COMPUTABLE \u2014 need >=2 samples with variance",
+    "pearson_p_value": "NOT COMPUTABLE",
+    "quadratic_weighted_kappa": 0.0
   },
   "failure_analysis": {
     "failure_analysis_status": "REAL_DATA",
